@@ -7,6 +7,8 @@ bounds = struct();
 % model_bounds.states.x.lb([8,9,16,17]) = deg2rad(-3);
 % model_bounds.states.x.ub([8,9,16,17]) = deg2rad(3);
 
+model_bounds.bezier_symmetry = true;
+
 model_bounds.inputs.Control.u.lb([5,10]) = -0.01;
 model_bounds.inputs.Control.u.ub([5,10]) = 0.01;
 

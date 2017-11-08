@@ -6,6 +6,7 @@ paths = struct;
 paths.EXPORT = [ROOT_PATH, '\gen'];
 paths.FROST = [ROOT_PATH, '\..\frost-dev'];
 paths.MODEL = [ROOT_PATH, '\..\Cassie_Model'];
+paths.UTILS = [ROOT_PATH, '\..\utils'];
 paths.MODEL_LOAD = [paths.MODEL, '\gen\sym'];
 paths.OPT_LOAD = [paths.EXPORT, '\sym\'];
 paths.OPT_EXPORT = [paths.EXPORT, '\opt'];
