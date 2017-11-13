@@ -77,23 +77,23 @@ function left_stance_constraints(nlp, bounds, varargin)
     cost_fun = SymFunction('torque', cost, {u});
     addRunningCost(nlp, cost_fun, 'u');
     
-    % Torso Pitch/Roll
-    q_torso = domain.States.x([5,6]);
-    cost = {sum((100.*q_torso).^2)};
-    cost_fun = SymFunction('q_torso', cost, {domain.States.x});
-    addRunningCost(nlp, cost_fun, 'x');
-    
-    % Hip Abduction Cost
-    q_hip_abduction = domain.States.x([8,16]);
-    cost = {sum((100.*q_hip_abduction).^2)};
-    cost_fun = SymFunction('q_hip_abduction', cost, {domain.States.x});
-    addRunningCost(nlp, cost_fun, 'x');
-    
-    % Hip Rotation Cost
-    q_hip_rotation = domain.States.x([9,17]);
-    cost = {sum((100.*q_hip_rotation).^2)};
-    cost_fun = SymFunction('q_hip_rotation', cost, {domain.States.x});
-    addRunningCost(nlp, cost_fun, 'x'); 
+%     % Torso Pitch/Roll
+%     q_torso = domain.States.x([5,6]);
+%     cost = {sum((100.*q_torso).^2)};
+%     cost_fun = SymFunction('q_torso', cost, {domain.States.x});
+%     addRunningCost(nlp, cost_fun, 'x');
+%     
+%     % Hip Abduction Cost
+%     q_hip_abduction = domain.States.x([8,16]);
+%     cost = {sum((100.*q_hip_abduction).^2)};
+%     cost_fun = SymFunction('q_hip_abduction', cost, {domain.States.x});
+%     addRunningCost(nlp, cost_fun, 'x');
+%     
+%     % Hip Rotation Cost
+%     q_hip_rotation = domain.States.x([9,17]);
+%     cost = {sum((100.*q_hip_rotation).^2)};
+%     cost_fun = SymFunction('q_hip_rotation', cost, {domain.States.x});
+%     addRunningCost(nlp, cost_fun, 'x'); 
 
     
 end

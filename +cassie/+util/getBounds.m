@@ -4,6 +4,9 @@ function bounds = getBounds(robot)
 model_bounds = robot.getLimits();
 bounds = struct();
 
+model_bounds.states.x.lb(4:6) = deg2rad(-5);
+model_bounds.states.x.ub(4:6) = deg2rad(3);
+
 % model_bounds.states.x.lb([8,9,16,17]) = deg2rad(-3);
 % model_bounds.states.x.ub([8,9,16,17]) = deg2rad(3);
 
@@ -12,8 +15,8 @@ model_bounds.bezier_symmetry = true;
 model_bounds.inputs.Control.u.lb([5,10]) = -0.01;
 model_bounds.inputs.Control.u.ub([5,10]) = 0.01;
 
-model_bounds.average_velocity.lb = [0,0];
-model_bounds.average_velocity.ub = [0,0];
+model_bounds.average_velocity.lb = [-1.0,0];
+model_bounds.average_velocity.ub = [-1.0,0];
 
 %% Right Stance
 bounds.RightStance = model_bounds;
@@ -34,17 +37,17 @@ bounds.RightStance.inputs.ConstraintWrench.fRightToeBottom.lb = -10000;
 bounds.RightStance.inputs.ConstraintWrench.fRightToeBottom.ub = 10000;
 bounds.RightStance.inputs.ConstraintWrench.fRightToeBottom.x0 = 100;
 
-bounds.RightStance.inputs.ConstraintWrench.fqFixed.lb = -10000;
-bounds.RightStance.inputs.ConstraintWrench.fqFixed.ub = 10000;
-bounds.RightStance.inputs.ConstraintWrench.fqFixed.x0 = 100;
+bounds.RightStance.inputs.ConstraintWrench.ffixedKneeSpring.lb = -10000;
+bounds.RightStance.inputs.ConstraintWrench.ffixedKneeSpring.ub = 10000;
+bounds.RightStance.inputs.ConstraintWrench.ffixedKneeSpring.x0 = 100;
 
 bounds.RightStance.inputs.ConstraintWrench.ffourBar.lb = -10000;
 bounds.RightStance.inputs.ConstraintWrench.ffourBar.ub = 10000;
 bounds.RightStance.inputs.ConstraintWrench.ffourBar.x0 = 100;
 
-bounds.RightStance.params.pqFixed.lb = -0*ones(4,1);
-bounds.RightStance.params.pqFixed.ub = 0*ones(4,1);
-bounds.RightStance.params.pqFixed.x0 = zeros(4,1);
+bounds.RightStance.params.pfixedKneeSpring.lb = -0*ones(2,1);
+bounds.RightStance.params.pfixedKneeSpring.ub = 0*ones(2,1);
+bounds.RightStance.params.pfixedKneeSpring.x0 = zeros(2,1);
 
 bounds.RightStance.params.pfourBar.lb = -0*ones(2,1);
 bounds.RightStance.params.pfourBar.ub = 0*ones(2,1);
@@ -86,17 +89,17 @@ bounds.LeftStance.inputs.ConstraintWrench.fLeftToeBottom.lb = -10000;
 bounds.LeftStance.inputs.ConstraintWrench.fLeftToeBottom.ub = 10000;
 bounds.LeftStance.inputs.ConstraintWrench.fLeftToeBottom.x0 = 100;
 
-bounds.LeftStance.inputs.ConstraintWrench.fqFixed.lb = -10000;
-bounds.LeftStance.inputs.ConstraintWrench.fqFixed.ub = 10000;
-bounds.LeftStance.inputs.ConstraintWrench.fqFixed.x0 = 100;
+bounds.LeftStance.inputs.ConstraintWrench.ffixedKneeSpring.lb = -10000;
+bounds.LeftStance.inputs.ConstraintWrench.ffixedKneeSpring.ub = 10000;
+bounds.LeftStance.inputs.ConstraintWrench.ffixedKneeSpring.x0 = 100;
 
 bounds.LeftStance.inputs.ConstraintWrench.ffourBar.lb = -10000;
 bounds.LeftStance.inputs.ConstraintWrench.ffourBar.ub = 10000;
 bounds.LeftStance.inputs.ConstraintWrench.ffourBar.x0 = 100;
 
-bounds.LeftStance.params.pqFixed.lb = -0*ones(4,1);
-bounds.LeftStance.params.pqFixed.ub = 0*ones(4,1);
-bounds.LeftStance.params.pqFixed.x0 = zeros(4,1);
+bounds.LeftStance.params.pfixedKneeSpring.lb = -0*ones(2,1);
+bounds.LeftStance.params.pfixedKneeSpring.ub = 0*ones(2,1);
+bounds.LeftStance.params.pfixedKneeSpring.x0 = zeros(2,1);
 
 bounds.LeftStance.params.pfourBar.lb = -0*ones(2,1);
 bounds.LeftStance.params.pfourBar.ub = 0*ones(2,1);
