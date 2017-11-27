@@ -5,7 +5,7 @@ model_bounds = robot.getLimits();
 bounds = struct();
 
 model_bounds.states.x.lb(4:6) = deg2rad(-5);
-model_bounds.states.x.ub(4:6) = deg2rad(3);
+model_bounds.states.x.ub(4:6) = deg2rad(5);
 
 % model_bounds.states.x.lb([8,9,16,17]) = deg2rad(-3);
 % model_bounds.states.x.ub([8,9,16,17]) = deg2rad(3);
@@ -15,8 +15,8 @@ model_bounds.bezier_symmetry = true;
 model_bounds.inputs.Control.u.lb([5,10]) = -0.01;
 model_bounds.inputs.Control.u.ub([5,10]) = 0.01;
 
-model_bounds.average_velocity.lb = [-1.0,0];
-model_bounds.average_velocity.ub = [-1.0,0];
+model_bounds.average_velocity.lb = [0.0,0];
+model_bounds.average_velocity.ub = [0.0,0];
 
 %% Right Stance
 bounds.RightStance = model_bounds;
