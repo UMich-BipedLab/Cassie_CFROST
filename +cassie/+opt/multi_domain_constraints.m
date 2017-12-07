@@ -3,7 +3,7 @@ function [ nlp ] = multi_domain_constraints( nlp, bounds, varargin)
 
 %% Bezier symmetry
 
-if bounds.RightStance.bezier_symmetry
+if bounds.RightStance.use_bezier_symmetry
     [N,M] = size(nlp.Phase(1).Plant.Params.atime);
     selected = SymVariable('s',[N,1]);
     a1  = SymVariable('a1',[N,M]);

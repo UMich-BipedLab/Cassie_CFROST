@@ -13,7 +13,7 @@ function right_impact_constraints(nlp, src, tar, bounds, varargin)
     x = plant.States.x;
     xn = plant.States.xn;
     x_diff = R*x-xn;
-    x_map = SymFunction(['xDiscreteMap' plant.Name], x_diff(3:end), {x,xn});
+    x_map = SymFunction(['xDiscreteMap' plant.Name], x_diff(4:end), {x,xn});
     
     addNodeConstraint(nlp, x_map, {'x','xn'}, 'first', 0, 0, 'Linear');
     
