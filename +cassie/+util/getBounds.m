@@ -15,16 +15,16 @@ bounds = struct();
 model_bounds.states.x.lb(1:3) = [-10,-10,-10];
 model_bounds.states.x.ub(1:3) = [10,10,10];
 
-model_bounds.states.x.lb(4:6) = deg2rad(-5);
-model_bounds.states.x.ub(4:6) = deg2rad(5);
+model_bounds.states.x.lb(4:6) = deg2rad(-3);
+model_bounds.states.x.ub(4:6) = deg2rad(3);
 
-model_bounds.states.x.lb([7,8,14,15]) = deg2rad(-2);
-model_bounds.states.x.ub([7,8,14,15]) = deg2rad(2);
+% model_bounds.states.x.lb([7,8,14,15]) = deg2rad(-5);
+% model_bounds.states.x.ub([7,8,14,15]) = deg2rad(5);
 
-% model_bounds.states.x.lb([7,14]) = deg2rad(-10);
-% model_bounds.states.x.ub([7,14]) = deg2rad(10);
-% model_bounds.states.x.lb([8,15]) = deg2rad(-3);
-% model_bounds.states.x.ub([8,15]) = deg2rad(3);
+model_bounds.states.x.lb([7,14]) = deg2rad(-3);
+model_bounds.states.x.ub([7,14]) = deg2rad(3);
+model_bounds.states.x.lb([8,15]) = deg2rad(-3);
+model_bounds.states.x.ub([8,15]) = deg2rad(3);
 
 model_bounds.use_bezier_symmetry = parser_results.use_bezier_symmetry;
 model_bounds.use_average_velocity = parser_results.use_average_velocity;
@@ -38,8 +38,12 @@ model_bounds.inputs.Control.u.ub([5,10]) = 0.01;
 model_bounds.average_velocity.lb = [0.0,0.0];
 model_bounds.average_velocity.ub = [0.0,0.0];
 
+model_bounds.average_roll.lb = deg2rad(0);
+model_bounds.average_roll.ub = deg2rad(0);
 model_bounds.average_pitch.lb = deg2rad(0);
 model_bounds.average_pitch.ub = deg2rad(0);
+model_bounds.average_yaw.lb = deg2rad(0);
+model_bounds.average_yaw.ub = deg2rad(0);
 model_bounds.average_hip_abduction.lb = deg2rad(0);
 model_bounds.average_hip_abduction.ub = deg2rad(0);
 model_bounds.average_hip_rotation.lb = deg2rad(0);
@@ -165,5 +169,7 @@ bounds.LeftStance.time.kd = 20;
 bounds.RightImpact = model_bounds;
 % Left Impact
 bounds.LeftImpact = model_bounds;
+% Left Impact Relabel
+bounds.LeftImpactRelabel = model_bounds;
 
 end

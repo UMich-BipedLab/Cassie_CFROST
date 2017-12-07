@@ -7,5 +7,5 @@ function left_impact_constraints(nlp, src, tar, bounds, varargin)
     
     % Don't need time continuity constraint
     removeConstraint(nlp,'tContDomain');
-
+    
 end
