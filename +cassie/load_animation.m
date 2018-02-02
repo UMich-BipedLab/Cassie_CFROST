@@ -1,4 +1,4 @@
-function [conGUI] = load_animation(robot, t, q)
+function [conGUI] = load_animation(robot, t, q, varargin)
 
     export_path = fullfile(pwd,'gen','anim');
     if ~exist(export_path,'dir')
@@ -52,7 +52,13 @@ function [conGUI] = load_animation(robot, t, q)
     cassie_disp.addItem(left_toe);
 
     % Display
-    anim = frost.Animator.AbstractAnimator(cassie_disp, t, q);
+    if isempty(varargin)
+        [terrain.Tx, terrain.Ty] = meshgrid(-10:1:10, -10:1:10);
+        terrain.Tz = 0.*terrain.Tx;
+    else
+        terrain = varargin{1};
+    end
+    anim = frost.Animator.AbstractAnimator(cassie_disp, t, q, terrain);
     anim.isLooping = true;
     anim.speed = 1;
     anim.pov = frost.Animator.AnimatorPointOfView.Free;
