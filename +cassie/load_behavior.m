@@ -53,13 +53,38 @@ function [sys,domains,guards] = load_behavior(robot, load_path, varargin)
             sys = setEdgeProperties(sys, srcs, tars, 'Guard', {left_impact, right_impact});
             
         case 'double_support'
-            
             % Define domains
             right_double_support = cassie.domain.right_double_support(robot, load_path);
             
             domains = right_double_support;
             guards = [];
             sys = right_double_support;     
+            
+        case 'double_support_two_step'
+            % RightDoubleSupport -> RightStance -> LeftImpact -> LeftDoubleSupport -> LeftStance -> RightImpact
+            %      ^                                                                                    |
+            %      |____________________________________________________________________________________|
+            
+            % Define domains
+            right_double_support = cassie.domain.right_double_support(robot, load_path);
+            left_double_support = cassie.domain.left_double_support(robot, load_path);
+            right_stance = cassie.domain.right_stance(robot, load_path);
+            right_impact = cassie.domain.right_impact(right_stance, load_path);
+            left_stance  = cassie.domain.left_stance(robot, load_path);
+            left_impact  = cassie.domain.left_impact(left_stance, load_path);
+            
+            domains = [right_double_support, right_stance, left_double_support, left_stance];
+            guards = [left_impact, right_impact];
+            
+            % Define hybrid system             
+            sys = HybridSystem('Cassie');
+            sys = addVertex(sys, {'RightDoubleSupport', 'RightStance', 'LeftDoubleSupport', 'LeftStance'}, 'Domain', {right_double_support, right_stance, left_double_support, left_stance});            
+            sys = addEdge(sys, 'RightDoubleSupport', 'RightStance');
+            sys = addEdge(sys, 'RightStance', 'LeftDoubleSupport');
+            sys = setEdgeProperties(sys, 'RightStance', 'LeftDoubleSupport', 'Guard', left_impact);
+            sys = addEdge(sys, 'LeftDoubleSupport', 'LeftStance');
+            sys = addEdge(sys, 'LeftStance', 'RightDoubleSupport');
+            sys = setEdgeProperties(sys, 'LeftStance', 'RightDoubleSupport', 'Guard', right_impact);
             
         otherwise
             error('Unknown behavior type')            
