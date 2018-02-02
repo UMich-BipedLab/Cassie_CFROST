@@ -35,25 +35,34 @@ function left_stance_constraints(nlp, bounds, varargin)
     
     %% step length
     if bounds.use_step_length
-        X0  = SymVariable('x0',[domain.numState,1]);
-        XF  = SymVariable('xF',[domain.numState,1]);
+%         X0  = SymVariable('x0',[domain.numState,1]);
+%         XF  = SymVariable('xF',[domain.numState,1]);
+
         H_WR = domain.ContactPoints.RightToeBottom.computeForwardKinematics;
-        H_WR0 = subs(H_WR, domain.States.x, X0);
-        H_WRF = subs(H_WR, domain.States.x, XF);
-        H_R0RF = H_WR0 \ H_WRF;
-        p_R0RF = H_R0RF(1:3,end);
-        step_length = [p_R0RF(2)/2; -p_R0RF(1)/2];
-        step_length_fun = SymFunction(['step_length_', domain.Name], step_length, {X0,XF});
+        H_WL = domain.ContactPoints.LeftToeBottom.computeForwardKinematics;
+        H_LR = H_WL\H_WR;
+        p_LR = H_LR(1:3,end);
+        step_length = p_LR(2);
+        step_length_fun = SymFunction(['step_length_', domain.Name], step_length, {domain.States.x});
+        addNodeConstraint(nlp, step_length_fun, {'x'}, 'last', bounds.step_length.lb(1), bounds.step_length.ub(1), 'Nonlinear');
         
-        step_length_cstr = NlpFunction('Name',['step_length_', domain.Name],...
-            'Dimension',2,...
-            'lb', bounds.step_length.lb,...
-            'ub', bounds.step_length.ub ,...
-            'Type','Nonlinear',...
-            'SymFun',step_length_fun,...
-            'DepVariables',[nlp.OptVarTable.x(1); nlp.OptVarTable.x(end)]);
-        
-        addConstraint(nlp, ['step_length_', domain.Name], 'last', step_length_cstr);
+%         H_WR = domain.ContactPoints.RightToeBottom.computeForwardKinematics;
+%         H_WR0 = subs(H_WR, domain.States.x, X0);
+%         H_WRF = subs(H_WR, domain.States.x, XF);
+%         H_R0RF = H_WR0 \ H_WRF;
+%         p_R0RF = H_R0RF(1:3,end);
+%         step_length = [p_R0RF(2)/2; -p_R0RF(1)/2];
+%         step_length_fun = SymFunction(['step_length_', domain.Name], step_length, {X0,XF});
+%         
+%         step_length_cstr = NlpFunction('Name',['step_length_', domain.Name],...
+%             'Dimension',2,...
+%             'lb', bounds.step_length.lb,...
+%             'ub', bounds.step_length.ub ,...
+%             'Type','Nonlinear',...
+%             'SymFun',step_length_fun,...
+%             'DepVariables',[nlp.OptVarTable.x(1); nlp.OptVarTable.x(end)]);
+%         
+%         addConstraint(nlp, ['step_length_', domain.Name], 'last', step_length_cstr);
     end
     
     %% Swing Foot Clearance
@@ -107,27 +116,27 @@ function left_stance_constraints(nlp, bounds, varargin)
     addNodeConstraint(nlp, swingToeVelocity_z, {'x','dx'}, 'last', -2, 0, 'Nonlinear');
     
     %% Average roll
-%     X = cell(1,nlp.NumNode);
-%     for i = 1:nlp.NumNode
-%         X{i}  = SymVariable(['x',num2str(i)],[domain.numState,1]);
-%         if i == 1
-%             average_roll = X{i}(4);
-%         else
-%             average_roll = average_roll + X{i}(4);
-%         end
-%     end
-%     average_roll = average_roll/nlp.NumNode;
-%     
-%     average_roll_fun = SymFunction(['average_roll_', domain.Name], average_roll, X);
-%     average_roll_cstr = NlpFunction('Name',['average_roll_', domain.Name],...
-%         'Dimension',1,...
-%         'lb', bounds.average_roll.lb,...
-%         'ub', bounds.average_roll.ub ,...
-%         'Type','Linear',...
-%         'SymFun',average_roll_fun,...
-%         'DepVariables',nlp.OptVarTable.x);
-%     
-%     addConstraint(nlp, ['average_roll_', domain.Name], 'last', average_roll_cstr);
+    X = cell(1,nlp.NumNode);
+    for i = 1:nlp.NumNode
+        X{i}  = SymVariable(['x',num2str(i)],[domain.numState,1]);
+        if i == 1
+            average_roll = X{i}(4);
+        else
+            average_roll = average_roll + X{i}(4);
+        end
+    end
+    average_roll = average_roll/nlp.NumNode;
+    
+    average_roll_fun = SymFunction(['average_roll_', domain.Name], average_roll, X);
+    average_roll_cstr = NlpFunction('Name',['average_roll_', domain.Name],...
+        'Dimension',1,...
+        'lb', bounds.average_roll.lb,...
+        'ub', bounds.average_roll.ub ,...
+        'Type','Linear',...
+        'SymFun',average_roll_fun,...
+        'DepVariables',nlp.OptVarTable.x);
+    
+    addConstraint(nlp, ['average_roll_', domain.Name], 'last', average_roll_cstr);
    
     %% Average pitch
     X = cell(1,nlp.NumNode);
@@ -153,27 +162,27 @@ function left_stance_constraints(nlp, bounds, varargin)
     addConstraint(nlp, ['average_pitch_', domain.Name], 'last', average_pitch_cstr);
     
     %% Average yaw
-%     X = cell(1,nlp.NumNode);
-%     for i = 1:nlp.NumNode
-%         X{i}  = SymVariable(['x',num2str(i)],[domain.numState,1]);
-%         if i == 1
-%             average_yaw = X{i}(6);
-%         else
-%             average_yaw = average_yaw + X{i}(6);
-%         end
-%     end
-%     average_yaw = average_yaw/nlp.NumNode;
-%     
-%     average_yaw_fun = SymFunction(['average_yaw_', domain.Name], average_yaw, X);
-%     average_yaw_cstr = NlpFunction('Name',['average_yaw_', domain.Name],...
-%         'Dimension',1,...
-%         'lb', bounds.average_roll.lb,...
-%         'ub', bounds.average_roll.ub ,...
-%         'Type','Linear',...
-%         'SymFun',average_yaw_fun,...
-%         'DepVariables',nlp.OptVarTable.x);
-%     
-%     addConstraint(nlp, ['average_yaw_', domain.Name], 'last', average_yaw_cstr);
+    X = cell(1,nlp.NumNode);
+    for i = 1:nlp.NumNode
+        X{i}  = SymVariable(['x',num2str(i)],[domain.numState,1]);
+        if i == 1
+            average_yaw = X{i}(6);
+        else
+            average_yaw = average_yaw + X{i}(6);
+        end
+    end
+    average_yaw = average_yaw/nlp.NumNode;
+    
+    average_yaw_fun = SymFunction(['average_yaw_', domain.Name], average_yaw, X);
+    average_yaw_cstr = NlpFunction('Name',['average_yaw_', domain.Name],...
+        'Dimension',1,...
+        'lb', bounds.average_roll.lb,...
+        'ub', bounds.average_roll.ub ,...
+        'Type','Linear',...
+        'SymFun',average_yaw_fun,...
+        'DepVariables',nlp.OptVarTable.x);
+    
+    addConstraint(nlp, ['average_yaw_', domain.Name], 'last', average_yaw_cstr);
     
     %% Average hip abduction
     X = cell(1,nlp.NumNode);
@@ -229,12 +238,12 @@ function left_stance_constraints(nlp, bounds, varargin)
     cost_fun = SymFunction('torque', cost, {u});
     addRunningCost(nlp, cost_fun, 'u');
     
-%     % Torso Pitch/Roll
-%     q_torso = domain.States.x([5,6]);
-%     cost = {sum((100.*q_torso).^2)};
-%     cost_fun = SymFunction('q_torso', cost, {domain.States.x});
-%     addRunningCost(nlp, cost_fun, 'x');
-%     
+    % Torso Pitch/Roll
+    q_torso = domain.States.x([5,6]);
+    cost = {sum((100.*q_torso).^2)};
+    cost_fun = SymFunction('q_torso', cost, {domain.States.x});
+    addRunningCost(nlp, cost_fun, 'x');
+    
 %     % Hip Abduction Cost
 %     q_hip_abduction = domain.States.x([8,16]);
 %     cost = {sum((100.*q_hip_abduction).^2)};

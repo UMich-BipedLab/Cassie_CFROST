@@ -52,6 +52,15 @@ function [sys,domains,guards] = load_behavior(robot, load_path, varargin)
             sys = addEdge(sys, srcs, tars);
             sys = setEdgeProperties(sys, srcs, tars, 'Guard', {left_impact, right_impact});
             
+        case 'double_support'
+            
+            % Define domains
+            right_double_support = cassie.domain.right_double_support(robot, load_path);
+            
+            domains = right_double_support;
+            guards = [];
+            sys = right_double_support;     
+            
         otherwise
             error('Unknown behavior type')            
     end

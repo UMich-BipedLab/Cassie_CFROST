@@ -15,16 +15,16 @@ bounds = struct();
 model_bounds.states.x.lb(1:3) = [-10,-10,-10];
 model_bounds.states.x.ub(1:3) = [10,10,10];
 
-model_bounds.states.x.lb(4:6) = deg2rad(-3);
-model_bounds.states.x.ub(4:6) = deg2rad(3);
+model_bounds.states.x.lb(4:6) = deg2rad(-5);
+model_bounds.states.x.ub(4:6) = deg2rad(5);
 
 % model_bounds.states.x.lb([7,8,14,15]) = deg2rad(-5);
 % model_bounds.states.x.ub([7,8,14,15]) = deg2rad(5);
 
-model_bounds.states.x.lb([7,14]) = deg2rad(-3);
-model_bounds.states.x.ub([7,14]) = deg2rad(3);
-model_bounds.states.x.lb([8,15]) = deg2rad(-3);
-model_bounds.states.x.ub([8,15]) = deg2rad(3);
+model_bounds.states.x.lb([7,14]) = deg2rad(-0);
+model_bounds.states.x.ub([7,14]) = deg2rad(0);
+model_bounds.states.x.lb([8,15]) = deg2rad(-0);
+model_bounds.states.x.ub([8,15]) = deg2rad(0);
 
 model_bounds.use_bezier_symmetry = parser_results.use_bezier_symmetry;
 model_bounds.use_average_velocity = parser_results.use_average_velocity;
