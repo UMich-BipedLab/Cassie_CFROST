@@ -75,7 +75,7 @@ function left_stance_constraints(nlp, bounds, varargin)
     addNodeConstraint(nlp, swingFootHeight, {'x'}, 'all', -Inf, Inf, 'Nonlinear');
     
     %% Swing Toe Pitch
-    J_swToe = domain.ContactPoints.LeftToeBottom.computeBodyJacobian(domain.numState);
+    J_swToe = domain.ContactPoints.RightToeBottom.computeBodyJacobian(domain.numState);
     v_swToe = J_swToe*domain.States.dx;
     swToePitch = SymFunction(['swingToePitch_',domain.Name], v_swToe(4), {domain.States.x, domain.States.dx});
     addNodeConstraint(nlp, swToePitch, {'x','dx'}, 'all', 0, 0, 'Nonlinear');
