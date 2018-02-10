@@ -35,9 +35,6 @@ function left_stance_constraints(nlp, bounds, varargin)
     
     %% step length
     if bounds.use_step_length
-%         X0  = SymVariable('x0',[domain.numState,1]);
-%         XF  = SymVariable('xF',[domain.numState,1]);
-
         H_WR = domain.ContactPoints.RightToeBottom.computeForwardKinematics;
         H_WL = domain.ContactPoints.LeftToeBottom.computeForwardKinematics;
         H_LR = H_WL\H_WR;
@@ -45,24 +42,6 @@ function left_stance_constraints(nlp, bounds, varargin)
         step_length = p_LR(2);
         step_length_fun = SymFunction(['step_length_', domain.Name], step_length, {domain.States.x});
         addNodeConstraint(nlp, step_length_fun, {'x'}, 'last', bounds.step_length.lb(1), bounds.step_length.ub(1), 'Nonlinear');
-        
-%         H_WR = domain.ContactPoints.RightToeBottom.computeForwardKinematics;
-%         H_WR0 = subs(H_WR, domain.States.x, X0);
-%         H_WRF = subs(H_WR, domain.States.x, XF);
-%         H_R0RF = H_WR0 \ H_WRF;
-%         p_R0RF = H_R0RF(1:3,end);
-%         step_length = [p_R0RF(2)/2; -p_R0RF(1)/2];
-%         step_length_fun = SymFunction(['step_length_', domain.Name], step_length, {X0,XF});
-%         
-%         step_length_cstr = NlpFunction('Name',['step_length_', domain.Name],...
-%             'Dimension',2,...
-%             'lb', bounds.step_length.lb,...
-%             'ub', bounds.step_length.ub ,...
-%             'Type','Nonlinear',...
-%             'SymFun',step_length_fun,...
-%             'DepVariables',[nlp.OptVarTable.x(1); nlp.OptVarTable.x(end)]);
-%         
-%         addConstraint(nlp, ['step_length_', domain.Name], 'last', step_length_cstr);
     end
     
     %% Swing Foot Clearance
@@ -81,7 +60,7 @@ function left_stance_constraints(nlp, bounds, varargin)
     addNodeConstraint(nlp, swToePitch, {'x','dx'}, 'all', 0, 0, 'Nonlinear');
     
     %% Swing Toe Yaw
-    J_swToe = domain.ContactPoints.LeftToeBottom.computeBodyJacobian(domain.numState);
+    J_swToe = domain.ContactPoints.RightToeBottom.computeBodyJacobian(domain.numState);
     v_swToe = J_swToe*domain.States.dx;
     swToePitch = SymFunction(['swingToeYaw_',domain.Name], v_swToe(6), {domain.States.x, domain.States.dx});
     addNodeConstraint(nlp, swToePitch, {'x','dx'}, 'all', 0, 0, 'Nonlinear');
