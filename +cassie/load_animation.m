@@ -60,7 +60,7 @@ function [conGUI] = load_animation(robot, t, q, varargin)
     end
     anim = frost.Animator.AbstractAnimator(cassie_disp, t, q, terrain);
     anim.isLooping = true;
-    anim.speed = 1;
+    anim.speed = 2;
     anim.pov = frost.Animator.AnimatorPointOfView.Free;
     anim.Animate(true);
     conGUI = frost.Animator.AnimatorControls();
