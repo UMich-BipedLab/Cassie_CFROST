@@ -15,8 +15,5 @@ function domain = right_stance(model, load_path)
    
     % virtual constraint
     domain = addVirtualConstraint(domain, cassie.virtual.actuated_joints(domain, load_path));
-    
-    % extra user constraints
-    domain.UserNlpConstraint = @cassie.opt.right_stance_constraints;
    
 end
