@@ -7,10 +7,10 @@ function [ distance_pelvis_to_stance_toe_fun ] = distance_pelvis_to_stance_toe( 
 
 % Choose frames
 switch nlp.Plant.Name
-    case 'RightStance'
+    case 'RightStance_SS'
         p_toe = nlp.Plant.ContactPoints.RightToeBottom.computeCartesianPosition;
         
-    case 'LeftStance'
+    case 'LeftStance_SS'
         p_toe = nlp.Plant.ContactPoints.LeftToeBottom.computeCartesianPosition;
 
     otherwise

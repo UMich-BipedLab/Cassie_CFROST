@@ -1,24 +1,38 @@
 % Left Foot Impact (guard)
-function guard = left_impact(domain, load_path, varargin)
+function guard = left_impact(model, load_path, varargin)
     
     % Parse inputs
     p = inputParser;
+    p.addOptional('double_support', false)
     p.addOptional('relabel', false)
     p.parse(varargin{:});
     parser_results = p.Results;
     
+    % Default domain name
+    Name = 'LeftImpact';
+    
+    % Specify next domain
+    if parser_results.double_support
+        Name = [Name, '_DS'];
+        domain = cassie.domain.left_stance(model, load_path, 'double_support', true);
+    else
+        Name = [Name, '_SS'];
+        domain = cassie.domain.left_stance(model, load_path);
+    end
+    
     if parser_results.relabel
-        % set impact
-        guard = RigidImpact('LeftImpactRelabel',domain,'leftToeHeight');
+        Name = [Name, '_Relabel'];
+        % Set Impact
+        guard = RigidImpact(Name,domain,'leftToeHeight');
         % Relabeling Matrix
         guard.R = guard.R(:,[1:6,14:20,7:13]);
         guard.R(:,[2,4,6,7,8,14,15]) = -guard.R(:,[2,4,6,7,8,14,15]);
     else
-        % set impact
-        guard = RigidImpact('LeftImpact',domain,'leftToeHeight');
+        % Set Impact
+        guard = RigidImpact(Name,domain,'leftToeHeight');
     end
     
-    % set the impact constraint
+    % Set the impact constraint
     guard.addImpactConstraint(struct2array(domain.HolonomicConstraints), load_path);
 
 end

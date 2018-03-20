@@ -7,10 +7,10 @@ function [ swing_toe_angular_velocity_y_fun ] = swing_toe_angular_velocity_y( nl
 
 % Choose frames
 switch nlp.Plant.Name
-    case 'RightStance'
+    case 'RightStance_SS'
         swing_toe = nlp.Plant.ContactPoints.LeftToeBottom;
         
-    case 'LeftStance'
+    case 'LeftStance_SS'
         swing_toe = nlp.Plant.ContactPoints.RightToeBottom;
         
     otherwise
