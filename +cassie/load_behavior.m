@@ -52,6 +52,29 @@ function [sys,domains,guards] = load_behavior(robot, load_path, varargin)
             sys = addEdge(sys, srcs, tars);
             sys = setEdgeProperties(sys, srcs, tars, 'Guard', {left_impact, right_impact});
             
+        case 'three_step'
+            % RightStance_SS -> LeftImpact_SS -> LeftStance_SS -> RightImpact_SS -> RightStance2_SS  
+            %      ^                                                                      |
+            %      |______________________________________________________________________|
+            
+            % Define domains
+            right_stance = cassie.domain.right_stance(robot, load_path);
+            right_stance_2 = cassie.domain.right_stance(robot, load_path);
+            left_stance  = cassie.domain.left_stance(robot, load_path);
+            right_impact = cassie.domain.right_impact(robot, load_path);
+            left_impact  = cassie.domain.left_impact(robot, load_path);
+            
+            domains = [right_stance, left_stance, right_stance_2];
+            guards = [left_impact, right_impact];
+            
+            % Define hybrid system
+            sys = HybridSystem('Cassie');
+            sys = addVertex(sys, {'RightStance_SS','LeftStance_SS','RightStance2_SS'}, 'Domain', {right_stance, left_stance, right_stance_2});
+            sys = addEdge(sys, 'RightStance_SS', 'LeftStance_SS');
+            sys = setEdgeProperties(sys, 'RightStance_SS', 'LeftStance_SS', 'Guard', left_impact);
+            sys = addEdge(sys, 'LeftStance_SS', 'RightStance2_SS');
+            sys = setEdgeProperties(sys, 'LeftStance_SS', 'RightStance2_SS', 'Guard', right_impact);
+                        
         case 'standing'
             % Define domains
             standing = cassie.domain.right_stance(robot, load_path, 'double_support', true);
