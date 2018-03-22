@@ -7,11 +7,11 @@ function [ step_width_fun ] = step_width( nlp )
 
 % Choose frames
 switch nlp.Plant.Name
-    case 'RightStance_SS'
+    case 'RightStance'
         H_W1 = nlp.Plant.ContactPoints.RightToeBottom.computeForwardKinematics;
         H_W2 = nlp.Plant.ContactPoints.LeftToeBottom.computeForwardKinematics;
         
-    case 'LeftStance_SS'
+    case 'LeftStance'
         H_W1 = nlp.Plant.ContactPoints.LeftToeBottom.computeForwardKinematics;
         H_W2 = nlp.Plant.ContactPoints.RightToeBottom.computeForwardKinematics;
         

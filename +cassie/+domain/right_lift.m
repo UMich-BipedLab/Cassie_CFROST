@@ -1,11 +1,25 @@
 % Right Foot Lift (guard)
-function guard = right_lift(model, load_path)
+function guard = right_lift(model, load_path, varargin)
+
+    % Parse inputs
+    p = inputParser;
+    p.addOptional('flight', false)
+    p.parse(varargin{:});
+    parser_results = p.Results;
+    
+    % Default domain name
+    Name = 'RightLift';
     
     % Specify next domain
-    domain = cassie.domain.left_stance(model, load_path);
-
+    if parser_results.flight
+        Name = [Name, 'Flight'];
+        domain = cassie.domain.flight(model, load_path);
+    else
+        domain = cassie.domain.left_stance(model, load_path);
+    end
+    
     % set guard (impact for now, we remove all impact constraints though)
-    guard = RigidImpact('RightLift_SS',domain,'rightToeGroundReactionForce');
+    guard = RigidImpact(Name, domain, 'rightToeGroundReactionForce');
     
     % set the impact constraint
     guard.addImpactConstraint(struct2array(domain.HolonomicConstraints), load_path);

@@ -7,10 +7,10 @@ function [ swing_toe_linear_velocity_z_fun ] = swing_toe_linear_velocity_z( nlp 
 
 % Choose frames
 switch nlp.Plant.Name
-    case 'RightStance_SS'
+    case 'RightStance'
         swing_toe = nlp.Plant.ContactPoints.LeftToeBottom;
         
-    case 'LeftStance_SS'
+    case 'LeftStance'
         swing_toe = nlp.Plant.ContactPoints.RightToeBottom;
         
     otherwise

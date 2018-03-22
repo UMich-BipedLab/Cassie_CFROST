@@ -13,15 +13,14 @@ function guard = right_impact(model, load_path, varargin)
     
     % Specify next domain
     if parser_results.double_support
-        Name = [Name, '_DS'];
-        domain = cassie.domain.right_stance(model, load_path, 'double_support', true);
+        Name = [Name, 'DoubleSupport'];
+        domain = cassie.domain.double_support(model, load_path);
     else
-        Name = [Name, '_SS'];
         domain = cassie.domain.right_stance(model, load_path);
     end
     
     if parser_results.relabel
-        Name = [Name, '_Relabel'];
+        Name = [Name, 'Relabel'];
         % Set Impact
         guard = RigidImpact(Name,domain,'rightToeHeight');
         % Relabeling Matrix
