@@ -74,7 +74,7 @@ function [sys,domains,guards] = load_behavior(robot, load_path, varargin)
             sys = setEdgeProperties(sys, 'RightStance1', 'LeftStance1', 'Guard', left_impact);
             sys = addEdge(sys, 'LeftStance1', 'RightStance2');
             sys = setEdgeProperties(sys, 'LeftStance1', 'RightStance2', 'Guard', right_impact);
-                        
+                             
         case 'one_step_running'
             % RightStance -> Right_Lift -> Flight -> LeftImpactRelabel
             %      ^                                         |
