@@ -74,7 +74,34 @@ function [sys,domains,guards] = load_behavior(robot, load_path, varargin)
             sys = setEdgeProperties(sys, 'RightStance1', 'LeftStance1', 'Guard', left_impact);
             sys = addEdge(sys, 'LeftStance1', 'RightStance2');
             sys = setEdgeProperties(sys, 'LeftStance1', 'RightStance2', 'Guard', right_impact);
-                             
+            
+        case 'four_step'
+            % RightStance -> LeftImpact -> LeftStance -> RightImpact -> RightStance2 -> LeftImpact -> LeftStance2 
+            %      ^                                                         |
+            %      |_________________________________________________________|
+            
+            % Define domains
+            right_stance_1 = cassie.domain.single_support(robot, load_path, 'leg', 'right', 'guard', 'left_impact');
+            left_impact_1  = cassie.domain.impact(robot, load_path, 'leg', 'left');
+            left_stance_1 = cassie.domain.single_support(robot, load_path, 'leg', 'left', 'guard', 'right_impact');
+            right_impact_1  = cassie.domain.impact(robot, load_path, 'leg', 'right');
+            right_stance_2 = cassie.domain.single_support(robot, load_path, 'leg', 'right', 'guard', 'left_impact');
+            left_impact_2  = cassie.domain.impact(robot, load_path, 'leg', 'left');
+            left_stance_2 = cassie.domain.single_support(robot, load_path, 'leg', 'left', 'guard', 'right_impact');
+            
+            domains = [right_stance_1, left_stance_1, right_stance_2, left_stance_2];
+            guards = [left_impact_1, right_impact_1, left_impact_2];
+            
+            % Define hybrid system
+            sys = HybridSystem('Cassie');
+            sys = addVertex(sys, {'RightStance1','LeftStance1','RightStance2','LeftStance2'}, 'Domain', {right_stance_1, left_stance_1, right_stance_2, left_stance_2});
+            sys = addEdge(sys, 'RightStance1', 'LeftStance1');
+            sys = setEdgeProperties(sys, 'RightStance1', 'LeftStance1', 'Guard', left_impact_1);
+            sys = addEdge(sys, 'LeftStance1', 'RightStance2');
+            sys = setEdgeProperties(sys, 'LeftStance1', 'RightStance2', 'Guard', right_impact_1);            
+            sys = addEdge(sys, 'RightStance2', 'LeftStance2');
+            sys = setEdgeProperties(sys, 'RightStance2', 'LeftStance2', 'Guard', left_impact_2);            
+
         case 'one_step_running'
             % RightStance -> Right_Lift -> Flight -> LeftImpactRelabel
             %      ^                                         |
