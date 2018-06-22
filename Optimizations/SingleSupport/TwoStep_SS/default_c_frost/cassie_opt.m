@@ -21,7 +21,6 @@ else
     robot.configureDynamics('DelayCoriolisSet',true,'OmitCoriolisSet',true);
     [sys, domains, guards] = cassie.load_behavior(robot, '');
 end
-    
 
 %% Create optimization problem
 num_grid.RightStance = 10;
@@ -156,10 +155,10 @@ if GENERATE_C
         [funcs, map] = frost_c.getAllFuncs(solver);
         frost_c.createFunctionListHeader(funcs, src_path, include_dir);
         frost_c.createIncludeHeader(funcs, include_dir);
-%         frost_c.createConstraints(nlp,[],[],src_gen_path, include_dir,{'dynamics_equation','dxDiscreteMapLeftImpact','dxDiscreteMapRightImpact'})
-%         frost_c.createConstraints(nlp,[],[],src_gen_path, include_dir)
-%         frost_c.createObjectives(nlp,[],[],src_gen_path, include_dir);
         save(fullfile(local_res_path, 'funcs'), 'funcs');
+%         frost_c.createConstraints(nlp,[],[],src_gen_path, include_dir,{'dynamics_equation','dxDiscreteMapLeftImpact','dxDiscreteMapRightImpact'})
+        frost_c.createConstraints(nlp,[],[],src_gen_path, include_dir,{'dynamics_equation'})
+        frost_c.createObjectives(nlp,[],[],src_gen_path, include_dir);
     end
     load(fullfile(local_res_path, 'funcs'))
     frost_c.createDataFile(solver, funcs, data_path, 'data');
@@ -172,6 +171,8 @@ end
 % frost_c.createConstraints(nlp, 11, 'StartingStatedX_RightStanceDown1', src_gen_path, include_dir,'dynamics_equation')
 % ./program --initial 'res/init.json' --options '../ipopt.opt' --data 'res/data.json' --bounds 'res/bounds.json' --output '../local/output/output.json'
 
+% frost_c.createConstraints(nlp, 1, 'dynamics_equation', 'cassie_dynamics/src/gen/', 'cassie_dynamics/include',[])
+% frost_c.createConstraints(nlp, 3, 'dynamics_equation', 'cassie_dynamics/src/gen/', 'cassie_dynamics/include',[])
 
 %% Load c_frost results
 sol = loadjson('periodic/local/output/output.json');
