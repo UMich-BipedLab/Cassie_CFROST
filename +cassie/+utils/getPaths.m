@@ -37,7 +37,7 @@ else
     if ~exist(paths,'dir')
         mkdir(paths);
     end
-    addpath(genpath(paths));
+    addpath(paths);
 end
 end
 
