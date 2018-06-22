@@ -1,1 +1,0 @@
-/mnt/c/Users/Ross Hartley/Documents/GitHub/Ross_Cassie_Controllers/submodules/Cassie_FROST/Optimizations/SingleSupport/TwoStep_SS/default_c_frost/cassie_dynamics/build/../lib/libcassie_dynamics.a
