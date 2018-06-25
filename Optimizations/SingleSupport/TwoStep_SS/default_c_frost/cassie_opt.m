@@ -71,7 +71,7 @@ end
 % removeConstraint(nlp.Phase(1),'BezierSymmetry');
 
 
-%% Solve Optimization Problem 
+%% Update bounds
 
 % -------- Velocity ---------
 velocity = [1;0.3];
@@ -107,6 +107,9 @@ solver = IpoptApplication(nlp, ipopt_options);
 % solver = IpoptApplication(nlp);
 old = load('x0');
 
+%% Run Optimization in Matlab
+[sol, info] = optimize(solver, old.solution.x); 
+% [sol, info] = optimize(solver);
 
 %% Create c-frost problem
 ROOT_PATH = 'periodic';
@@ -169,8 +172,8 @@ if GENERATE_C
     if ~exist(fullfile(ROOT_PATH, 'ipopt.opt'), 'file')
         copyfile(fullfile(PATHS.RES, 'ipopt.opt'), fullfile(ROOT_PATH, 'ipopt.opt'));
     end
-    if ~exist(fullfile(ROOT_PATH, 'run_all.sh'), 'file')
-        copyfile(fullfile(PATHS.RES, 'run_all.sh'), fullfile(ROOT_PATH, 'run_all.sh'));
+    if ~exist(fullfile(c_code_path, 'run_all.sh'), 'file')
+        copyfile(fullfile(PATHS.RES, 'run_all.sh'), fullfile(c_code_path, 'run_all.sh'));
     end    
 end
 
@@ -183,7 +186,7 @@ end
 % frost_c.createConstraints(nlp, 3, 'dynamics_equation', 'cassie_dynamics/src/gen/', 'cassie_dynamics/include',[])
 
 %% Load c_frost results
-sol = loadjson('periodic/local/output/output.json');
+sol = loadjson(fullfile(local_output_path,'output.json'));
 
 %% Extract optimization results
 [tspan, states, inputs, params] = exportSolution(nlp, sol);
