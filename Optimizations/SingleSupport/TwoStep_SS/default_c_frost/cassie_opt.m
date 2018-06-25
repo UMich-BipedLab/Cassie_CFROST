@@ -1,16 +1,16 @@
 %% Setup
 restoredefaultpath; matlabrc; clear; clc;
 root = fileparts(fileparts(fileparts(fileparts(pwd))));
-addpath(genpath(root));
+addpath(root);
 PATHS = cassie.utils.getPaths(root);
 frost_addpath;
-
-addpath('C:\Users\Ross Hartley\Documents\GitHub\Ross_Cassie_Controllers\submodules\C-Frost\Matlab')
 
 % Settings
 LOAD = false;
 COMPILE = false;
 SAVE = false;
+GENERATE_C = true;
+GENERATE_C_COMPILE = true;
 
 % Load hybrid system
 robot = Cassie([PATHS.MODEL,'\urdf\cassie_with_sensors.urdf']);
@@ -109,8 +109,6 @@ old = load('x0');
 
 
 %% Create c-frost problem
-GENERATE_C = true;
-GENERATE_C_COMPILE = true;
 ROOT_PATH = 'periodic';
 c_code_path = fullfile(ROOT_PATH, 'c_code');
 src_path = fullfile(ROOT_PATH, 'c_code', 'src');
@@ -164,6 +162,16 @@ if GENERATE_C
     frost_c.createDataFile(solver, funcs, data_path, 'data');
     frost_c.createBoundsFile(solver, funcs, data_path, 'bounds');
     frost_c.createInitialGuess(solver, data_path, old.solution.x);
+    
+    if ~exist(fullfile(c_code_path, 'CMakeLists.txt'), 'file')
+        copyfile(fullfile(PATHS.RES, 'CMakeLists_sample.txt'), fullfile(c_code_path, 'CMakeLists.txt'));
+    end
+    if ~exist(fullfile(ROOT_PATH, 'ipopt.opt'), 'file')
+        copyfile(fullfile(PATHS.RES, 'ipopt.opt'), fullfile(ROOT_PATH, 'ipopt.opt'));
+    end
+    if ~exist(fullfile(ROOT_PATH, 'run_all.sh'), 'file')
+        copyfile(fullfile(PATHS.RES, 'run_all.sh'), fullfile(ROOT_PATH, 'run_all.sh'));
+    end    
 end
 
 % Example commands

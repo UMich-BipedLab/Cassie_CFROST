@@ -1,0 +1,1 @@
+/mnt/c/Users/Ross Hartley/Documents/GitHub/Ross_Cassie_Controllers/submodules/Cassie_FROST/cassie_dynamics_library/build/../lib/libcassie_dynamics.a

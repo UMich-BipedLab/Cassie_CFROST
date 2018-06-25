@@ -4,7 +4,9 @@ function [ paths ] = getPaths( ROOT_PATH )
 paths = struct;
 
 paths.EXPORT = [ROOT_PATH, '\gen'];
+paths.RES = [ROOT_PATH, '\res'];
 paths.FROST = [ROOT_PATH, '\..\frost-dev'];
+paths.C_FROST = [ROOT_PATH, '\..\C-Frost\Matlab'];
 paths.MODEL = [ROOT_PATH, '\..\Cassie_Model'];
 paths.UTILS = [ROOT_PATH, '\..\utils'];
 paths.MODEL_LOAD = [paths.MODEL, '\gen\sym'];
