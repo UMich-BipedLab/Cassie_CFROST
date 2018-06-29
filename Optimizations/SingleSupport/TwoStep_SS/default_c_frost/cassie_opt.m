@@ -9,8 +9,8 @@ frost_addpath;
 LOAD = false;
 COMPILE = false;
 SAVE = false;
-GENERATE_C = true;
-GENERATE_C_COMPILE = true;
+GENERATE_C = false;
+GENERATE_C_COMPILE = false;
 
 % Load hybrid system
 robot = Cassie([PATHS.MODEL,'\urdf\cassie_with_sensors.urdf']);
@@ -36,7 +36,7 @@ nlp.Phase(4).Plant.UserNlpConstraint = @TwoStep_SS_default_c_frost.opt.right_imp
 nlp.update;
 
 % Configure bounds and update
-bounds = TwoStep_SS_default_c_frost.utils.getBounds(robot);
+bounds = TwoStep_SS_default_c_frost.utils.getBounds(robot, false);
 if LOAD
     nlp.configure(bounds, PATHS.OPT_LOAD);
 else
@@ -44,8 +44,8 @@ else
 end
 
 % Add Multi-domain constraints
-% nlp = TwoStep_SS_default_c_frost.opt.multi_domain_constraints(nlp);
-% nlp.update;
+nlp = TwoStep_SS_default_c_frost.opt.multi_domain_constraints(nlp);
+nlp.update;
 
 
 %% Compile and Save
@@ -108,7 +108,7 @@ solver = IpoptApplication(nlp, ipopt_options);
 old = load('x0');
 
 %% Run Optimization in Matlab
-[sol, info] = optimize(solver, old.solution.x); 
+%[sol, info] = optimize(solver, old.solution.x); 
 % [sol, info] = optimize(solver);
 
 %% Create c-frost problem
@@ -157,6 +157,7 @@ if GENERATE_C
         frost_c.createFunctionListHeader(funcs, src_path, include_dir);
         frost_c.createIncludeHeader(funcs, include_dir);
         save(fullfile(local_res_path, 'funcs'), 'funcs');
+        
 %         frost_c.createConstraints(nlp,[],[],src_gen_path, include_dir,{'dynamics_equation','dxDiscreteMapLeftImpact','dxDiscreteMapRightImpact'})
         frost_c.createConstraints(nlp,[],[],src_gen_path, include_dir,{'dynamics_equation'})
         frost_c.createObjectives(nlp,[],[],src_gen_path, include_dir);
@@ -202,5 +203,3 @@ solution.params = params;
 q_log = [solution.states{1}.x, solution.states{3}.x]; 
 t_log = [solution.tspan{1}, solution.tspan{1}(end) + solution.tspan{3}];
 conGUI = cassie.load_animation(robot, t_log, q_log)';
-
-

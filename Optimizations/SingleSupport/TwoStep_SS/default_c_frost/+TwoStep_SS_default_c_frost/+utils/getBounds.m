@@ -1,4 +1,4 @@
-function bounds = getBounds(robot)
+function bounds = getBounds(robot, vy)
 
 % Get Bounds
 model_bounds = robot.getLimits();
@@ -7,26 +7,28 @@ bounds = struct();
 model_bounds.states.x.lb(1:3) = [-10,-10,-10];
 model_bounds.states.x.ub(1:3) = [10,10,10];
 
-% model_bounds.states.x.lb(4:6) = deg2rad(-15);
-% model_bounds.states.x.ub(4:6) = deg2rad(15);
+model_bounds.states.x.lb(4) = deg2rad(-0.1);
+model_bounds.states.x.ub(4) = deg2rad(0.1);
+model_bounds.states.x.lb(5:6) = deg2rad(-3);
+model_bounds.states.x.ub(5:6) = deg2rad(3);
 
-% model_bounds.states.x.lb([7,8,14,15]) = deg2rad(-15);
-% model_bounds.states.x.ub([7,8,14,15]) = deg2rad(15);
+model_bounds.states.x.lb([7,8,14,15]) = min(deg2rad(-1.5 - 70*abs(vy)), model_bounds.states.x.lb([7,8,14,15]));
+model_bounds.states.x.ub([7,8,14,15]) = max(deg2rad(+1.5 + 70*abs(vy)), model_bounds.states.x.ub([7,8,14,15]));
 
 model_bounds.inputs.Control.u.lb([5,10]) = -0.01;
 model_bounds.inputs.Control.u.ub([5,10]) = 0.01;
 
 model_bounds.average_pitch.lb = deg2rad(0);
 model_bounds.average_pitch.ub = deg2rad(0);
-% 
-% model_bounds.average_yaw.lb = deg2rad(0);
-% model_bounds.average_yaw.ub = deg2rad(0);
-% 
-% model_bounds.average_hip_abduction.lb = deg2rad(0);
-% model_bounds.average_hip_abduction.ub = deg2rad(0);
-% 
-model_bounds.average_hip_rotation.lb = deg2rad(0);
-model_bounds.average_hip_rotation.ub = deg2rad(0);
+
+model_bounds.average_yaw.lb = deg2rad(0);
+model_bounds.average_yaw.ub = deg2rad(0);
+
+model_bounds.average_hip_abduction.lb = deg2rad(-70*abs(vy));
+model_bounds.average_hip_abduction.ub = deg2rad(+70*abs(vy));
+
+model_bounds.average_hip_rotation.lb = deg2rad(-70*abs(vy));
+model_bounds.average_hip_rotation.ub = deg2rad(+70*abs(vy));
 
 model_bounds.average_velocity.lb = 0.0;
 model_bounds.average_velocity.ub = 0.0;
