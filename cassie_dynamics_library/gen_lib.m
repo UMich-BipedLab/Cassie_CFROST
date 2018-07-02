@@ -6,7 +6,7 @@ PATHS = cassie.utils.getPaths(root);
 frost_addpath;
 
 % Settings
-OMIT_CORIOLIS = false;
+OMIT_CORIOLIS = true;
 
 % Load hybrid system
 robot = Cassie([PATHS.MODEL,'\urdf\cassie_with_sensors.urdf']);
@@ -17,10 +17,10 @@ robot.configureDynamics('DelayCoriolisSet',false,'OmitCoriolisSet',OMIT_CORIOLIS
 num_grid.RightStance = 10;
 num_grid.LeftStance = 10;
 nlp = HybridTrajectoryOptimization('Cassie_TwoStep_SS',sys,num_grid,[],'EqualityConstraintBoundary',1e-4);
-nlp.update;
 bounds = getBounds(robot);
 nlp.configure(bounds);
-solver = IpoptApplication(nlp);
+addRunningCost(nlp.Phase(1), cassie.costs.torque(nlp.Phase(1)), 'u');
+nlp.update;
 
 %% Create Dynamics Constraints
 frost_c.createConstraints(nlp, 1, 'dynamics_equation', 'src/gen/', 'include/',[])
