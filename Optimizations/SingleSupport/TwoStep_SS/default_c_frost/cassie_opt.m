@@ -52,7 +52,7 @@ nlp.update;
 if COMPILE
     compileObjective(nlp,[],[],PATHS.OPT_EXPORT);
 %     compileConstraint(nlp,[],[],PATHS.OPT_EXPORT);
-    compileConstraint(nlp,[],[],PATHS.OPT_EXPORT,'dynamics_equation');
+    compileConstraint(nlp,[],[],PATHS.OPT_EXPORT);
 %     nlp.Phase(3).ConstrTable.dynamics_equation(1).SummandFunctions(end).SymFun.export(PATHS.OPT_EXPORT, 'ForceExport',true)
 %     nlp.Phase(3).ConstrTable.dynamics_equation(1).SummandFunctions(end).SymFun.exportJacobian(PATHS.OPT_EXPORT, 'ForceExport',true)
 end
@@ -105,10 +105,11 @@ ipopt_options.compl_inf_tol          = 1e0;
     
 solver = IpoptApplication(nlp, ipopt_options);
 % solver = IpoptApplication(nlp);
-old = load('x0');
 
 %% Run Optimization in Matlab
-%[sol, info] = optimize(solver, old.solution.x); 
+% x0 = loadjson(fullfile('res', 'init.json');
+% x0 = x0';
+% [sol, info] = optimize(solver, x0);
 % [sol, info] = optimize(solver);
 
 %% Create c-frost problem
@@ -158,14 +159,14 @@ if GENERATE_C
         frost_c.createIncludeHeader(funcs, include_dir);
         save(fullfile(local_res_path, 'funcs'), 'funcs');
         
-%         frost_c.createConstraints(nlp,[],[],src_gen_path, include_dir,{'dynamics_equation','dxDiscreteMapLeftImpact','dxDiscreteMapRightImpact'})
         frost_c.createConstraints(nlp,[],[],src_gen_path, include_dir,{'dynamics_equation'})
         frost_c.createObjectives(nlp,[],[],src_gen_path, include_dir);
     end
     load(fullfile(local_res_path, 'funcs'))
     frost_c.createDataFile(solver, funcs, data_path, 'data');
     frost_c.createBoundsFile(solver, funcs, data_path, 'bounds');
-    frost_c.createInitialGuess(solver, data_path, old.solution.x);
+    % frost_c.createInitialGuess(solver, data_path);
+    copyfile(fullfile('res', 'init.json'), fullfile(data_path, 'init.json'));
     
     if ~exist(fullfile(c_code_path, 'CMakeLists.txt'), 'file')
         copyfile(fullfile(PATHS.RES, 'CMakeLists_sample.txt'), fullfile(c_code_path, 'CMakeLists.txt'));
@@ -173,9 +174,7 @@ if GENERATE_C
     if ~exist(fullfile(ROOT_PATH, 'ipopt.opt'), 'file')
         copyfile(fullfile(PATHS.RES, 'ipopt.opt'), fullfile(ROOT_PATH, 'ipopt.opt'));
     end
-    if ~exist(fullfile(c_code_path, 'run_all.sh'), 'file')
-        copyfile(fullfile(PATHS.RES, 'run_all.sh'), fullfile(c_code_path, 'run_all.sh'));
-    end    
+    copyfile(fullfile('res', 'run_all.sh'), fullfile(c_code_path, 'run_all.sh'));
 end
 
 % Example commands
@@ -187,7 +186,8 @@ end
 % frost_c.createConstraints(nlp, 3, 'dynamics_equation', 'cassie_dynamics/src/gen/', 'cassie_dynamics/include',[])
 
 %% Load c_frost results
-sol = loadjson(fullfile(local_output_path,'output.json'));
+%sol = loadjson(fullfile(local_output_path,'output.json'));
+sol = loadjson(fullfile(data_path,'init.json'));
 
 %% Extract optimization results
 [tspan, states, inputs, params] = exportSolution(nlp, sol);
