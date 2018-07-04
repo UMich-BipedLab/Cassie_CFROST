@@ -23,5 +23,8 @@ addRunningCost(nlp.Phase(1), cassie.costs.torque(nlp.Phase(1)), 'u');
 nlp.update;
 
 %% Create Dynamics Constraints
+mkdir('mex');
+compileConstraint(nlp, 1, 'dynamics_equation', 'mex');
+compileConstraint(nlp, 3, 'dynamics_equation', 'mex');
 frost_c.createConstraints(nlp, 1, 'dynamics_equation', 'src/gen/', 'include/',[])
 frost_c.createConstraints(nlp, 3, 'dynamics_equation', 'src/gen/', 'include/',[])

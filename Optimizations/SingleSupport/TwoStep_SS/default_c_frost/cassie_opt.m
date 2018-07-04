@@ -4,6 +4,10 @@ root = fileparts(fileparts(fileparts(fileparts(pwd))));
 addpath(root);
 PATHS = cassie.utils.getPaths(root);
 frost_addpath;
+addpath(fullfile(cassie.getRootPath(), 'cassie_dynamics_library', 'mex'));
+mkdir('gen');
+mkdir('gen/opt');
+addpath(genpath('gen'));
 
 % Settings
 LOAD = false;
@@ -50,9 +54,8 @@ nlp.update;
 
 %% Compile and Save
 if COMPILE
-    compileObjective(nlp,[],[],PATHS.OPT_EXPORT);
-%     compileConstraint(nlp,[],[],PATHS.OPT_EXPORT);
-    compileConstraint(nlp,[],[],PATHS.OPT_EXPORT);
+    compileObjective(nlp, [], [], fullfile('gen', 'opt'));
+    compileConstraint(nlp, [], [], fullfile('gen', 'opt'), 'dynamics_equation');
 %     nlp.Phase(3).ConstrTable.dynamics_equation(1).SummandFunctions(end).SymFun.export(PATHS.OPT_EXPORT, 'ForceExport',true)
 %     nlp.Phase(3).ConstrTable.dynamics_equation(1).SummandFunctions(end).SymFun.exportJacobian(PATHS.OPT_EXPORT, 'ForceExport',true)
 end
