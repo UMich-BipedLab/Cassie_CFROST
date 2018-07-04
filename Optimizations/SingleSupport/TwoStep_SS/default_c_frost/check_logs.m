@@ -5,6 +5,7 @@ H_range = linspace(-0.15, 0.15, 11);
 counter = 1;
 
 num_of_iterations = zeros(1331, 1);
+status = zeros(1331, 1);
 
 lines = cell(67, 1);
 index = 1;
@@ -24,7 +25,10 @@ for vx = Vx_range
             
             num_of_iterations(counter, 1) = sscanf(lines{index}, 'Number of Iterations....: %d');
             if strcmp(actual_line, '*** The problem FAILED!')
+                status(counter) = -1;
                 fprintf('%d (%.3f, %.3f, %.3f): %s\n', counter, vx, vy, h, actual_line);
+            else
+                status(counter) = 1;
             end
             fclose(fid);
             
