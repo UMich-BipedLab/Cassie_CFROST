@@ -1,5 +1,6 @@
 %% Setup
-restoredefaultpath; matlabrc; clear; clc;
+clear; clc; restoredefaultpath; matlabrc; if(exist('startup.m', 'file')); startup; end;
+
 root = fileparts(fileparts(fileparts(fileparts(pwd))));
 addpath(root);
 PATHS = cassie.utils.getPaths(root);
