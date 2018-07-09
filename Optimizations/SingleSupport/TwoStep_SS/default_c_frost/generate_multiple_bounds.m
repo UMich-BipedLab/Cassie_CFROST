@@ -52,6 +52,3 @@ for vx = Vx_range
         end
     end
 end
-
-
-

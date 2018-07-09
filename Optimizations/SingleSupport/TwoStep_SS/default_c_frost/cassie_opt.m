@@ -123,9 +123,11 @@ src_path = fullfile(ROOT_PATH, 'c_code', 'src');
 src_gen_path = fullfile(ROOT_PATH, 'c_code', 'src', 'gen');
 include_dir = fullfile(ROOT_PATH, 'c_code', 'include');
 data_path = fullfile(ROOT_PATH, 'c_code', 'res');
+data_path_lib = fullfile(ROOT_PATH, 'c_code', 'res_lib');
 local_path = fullfile(ROOT_PATH, 'local');
 local_res_path = fullfile(ROOT_PATH, 'local', 'res');
 local_output_path = fullfile(ROOT_PATH, 'local', 'output');
+local_output_lib_path = fullfile(ROOT_PATH, 'local', 'output_lib');
 local_log_path = fullfile(ROOT_PATH, 'local', 'log');
 
 if GENERATE_C

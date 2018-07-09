@@ -12,8 +12,8 @@ model_bounds.states.x.ub(4) = deg2rad(0.1);
 model_bounds.states.x.lb(5:6) = deg2rad(-3);
 model_bounds.states.x.ub(5:6) = deg2rad(3);
 
-model_bounds.states.x.lb([7,8,14,15]) = min(deg2rad(-1.5 - 70*abs(vy)), model_bounds.states.x.lb([7,8,14,15]));
-model_bounds.states.x.ub([7,8,14,15]) = max(deg2rad(+1.5 + 70*abs(vy)), model_bounds.states.x.ub([7,8,14,15]));
+model_bounds.states.x.lb([7,8,14,15]) = max(deg2rad(-1.5 - 70*abs(vy)), model_bounds.states.x.lb([7,8,14,15]));
+model_bounds.states.x.ub([7,8,14,15]) = min(deg2rad(+1.5 + 70*abs(vy)), model_bounds.states.x.ub([7,8,14,15]));
 
 model_bounds.inputs.Control.u.lb([5,10]) = -0.01;
 model_bounds.inputs.Control.u.ub([5,10]) = 0.01;
@@ -44,6 +44,9 @@ model_bounds.toe_to_toe_width.ub = -0.10;
 
 %% Right Stance
 bounds.RightStance = model_bounds;
+
+% bounds.RightStance.states.dx.lb(17) = max(deg2rad(-3), bounds.RightStance.states.dx.lb(17));
+% bounds.RightStance.states.dx.ub(17) = min(deg2rad(+3), bounds.RightStance.states.dx.ub(17));
 
 bounds.RightStance.time.t0.lb = 0;
 bounds.RightStance.time.t0.ub = 0;
@@ -96,6 +99,9 @@ bounds.RightStance.time.kd = 20;
 
 %% Left Stance
 bounds.LeftStance = model_bounds;
+
+% bounds.RightStance.states.dx.lb(10) = max(deg2rad(-3), bounds.RightStance.states.dx.lb(10));
+% bounds.RightStance.states.dx.ub(10) = min(deg2rad(+3), bounds.RightStance.states.dx.ub(10));
 
 bounds.LeftStance.time.t0.lb = 0;
 bounds.LeftStance.time.t0.ub = 0;

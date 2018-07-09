@@ -1,6 +1,6 @@
 Vx_range = linspace(-1, 1, 9);
-Vy_range = linspace(-0.3, 0.3, 11);
-H_range = linspace(-0.2, 0.2, 11);
+Vy_range = 0;linspace(-0.3, 0.3, 11);
+H_range = 0;linspace(-0.15, 0.15, 11);
 
 counter = 1;
 
@@ -11,13 +11,13 @@ gait_library = [];
 GaitLibrary = {};
 
 for vx = Vx_range
-    %for vy = Vy_range
-        %for h = H_range
+    for vy = Vy_range
+        for h = H_range
             velocity = [vx; vy];
             step_height = h;
 
             %% Load c_frost results
-            sol = loadjson(fullfile(local_output_path, sprintf('output_%d.json', counter)));
+            sol = loadjson(fullfile(local_output_lib_path, sprintf('output_%d.json', counter)));
 
             %% Extract optimization results
             [tspan, states, inputs, params] = exportSolution(nlp, sol);
@@ -40,8 +40,8 @@ for vx = Vx_range
             end
             
             counter = counter + 1;
-        %end
-    %end
+        end
+    end
 end
 
-save('periodic/local/GaitLibrary', 'GaitLibrary');
+save(fullfile(local_path, 'GaitLibrary.mat'), 'GaitLibrary');

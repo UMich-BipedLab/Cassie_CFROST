@@ -12,10 +12,11 @@ end
 for i = 1:length(GaitLibrary)
     for j = 1:N
         t = linspace(0, 0.4, 21);
+        v = ones(size(t)).*GaitLibrary{i}.velocity(1);
         if j <= 3
-            plot(axs(j), t, GaitLibrary{i}.opt.states{1}.x(j, :));
+            plot3(axs(j), t, GaitLibrary{i}.opt.states{1}.x(j, :), v);
         else
-            plot(axs(j), t, rad2deg(GaitLibrary{i}.opt.states{1}.x(j, :)));
+            plot3(axs(j), t, rad2deg(GaitLibrary{i}.opt.states{1}.x(j, :)), v);
         end
     end
 end

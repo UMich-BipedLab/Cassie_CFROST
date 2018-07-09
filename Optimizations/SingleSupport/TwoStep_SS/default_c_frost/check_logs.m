@@ -4,8 +4,8 @@ H_range = linspace(-0.15, 0.15, 11);
 
 counter = 1;
 
-num_of_iterations = zeros(1331, 1);
-status = zeros(1331, 1);
+num_of_iterations = zeros(length(Vx_range)*length(Vy_range)*length(H_range), 1);
+status = zeros(length(Vx_range)*length(Vy_range)*length(H_range), 1);
 
 lines = cell(67, 1);
 index = 1;
