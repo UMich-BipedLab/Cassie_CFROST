@@ -46,11 +46,18 @@ function left_stance(nlp, bounds, varargin)
         {'x','dx'}, 'all', 0, 0, 'Nonlinear');
     % Final node
     addNodeConstraint(nlp, cassie.constraints.swing_toe_linear_velocity_x(nlp), ...
-        {'x','dx'}, 'last', 0, 0, 'Nonlinear');
+        {'x','dx'}, 'last', bounds.swing_toe_vel_x.lb, bounds.swing_toe_vel_x.ub, 'Nonlinear');
     addNodeConstraint(nlp, cassie.constraints.swing_toe_linear_velocity_y(nlp), ...
-        {'x','dx'}, 'last', 0, 0, 'Nonlinear');
+        {'x','dx'}, 'last', bounds.swing_toe_vel_y.lb, bounds.swing_toe_vel_y.ub, 'Nonlinear');
     addNodeConstraint(nlp, cassie.constraints.swing_toe_linear_velocity_z(nlp), ...
-        {'x','dx'}, 'last', -2, 0, 'Nonlinear');
+        {'x','dx'}, 'last', bounds.swing_toe_vel_z.lb, bounds.swing_toe_vel_z.ub, 'Nonlinear');
+    
+    %% Swing knee velocity
+    dx = nlp.Plant.States.dx;
+    expression = dx(17);
+    func = SymFunction(['swing_knee_velocity_',nlp.Plant.Name], expression, {nlp.Plant.States.dx});
+    addNodeConstraint(nlp, func, ...
+        {'dx'}, 'last',  bounds.swing_knee_vel.lb,  bounds.swing_knee_vel.ub, 'Linear');
     
     %% Average pitch
     average_pitch_cstr = NlpFunction('Name',['average_pitch_', domain.Name],...

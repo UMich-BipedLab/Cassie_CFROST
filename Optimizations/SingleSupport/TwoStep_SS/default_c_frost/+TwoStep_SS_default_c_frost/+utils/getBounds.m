@@ -1,4 +1,4 @@
-function bounds = getBounds(robot, vy)
+function bounds = getBounds(robot, vx, vy, height)
 
 % Get Bounds
 model_bounds = robot.getLimits();
@@ -17,6 +17,16 @@ model_bounds.states.x.ub([7,8,14,15]) = min(deg2rad(+1.5 + 70*abs(vy)), model_bo
 
 model_bounds.inputs.Control.u.lb([5,10]) = -0.01;
 model_bounds.inputs.Control.u.ub([5,10]) = 0.01;
+
+model_bounds.swing_knee_vel.lb = 0.5;
+model_bounds.swing_knee_vel.ub = 2.0;
+
+model_bounds.swing_toe_vel_x.lb = 0;%-abs(vx)*0.3;
+model_bounds.swing_toe_vel_x.ub = 0;%+abs(vx)*0.3;
+model_bounds.swing_toe_vel_y.lb = 0;
+model_bounds.swing_toe_vel_y.ub = 0;
+model_bounds.swing_toe_vel_z.lb = -2;
+model_bounds.swing_toe_vel_z.ub = 0;
 
 model_bounds.average_pitch.lb = deg2rad(0);
 model_bounds.average_pitch.ub = deg2rad(0);

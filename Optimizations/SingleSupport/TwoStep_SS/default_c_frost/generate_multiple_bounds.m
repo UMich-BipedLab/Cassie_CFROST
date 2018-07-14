@@ -1,6 +1,6 @@
-Vx_range = linspace(-1, 1, 11);
-Vy_range = linspace(-0.3, 0.3, 11);
-H_range = linspace(-0.15, 0.15, 11);
+Vx_range = linspace(-1, 1, 9);
+Vy_range = 0;linspace(-0.3, 0.3, 11);
+H_range = 0;linspace(-0.15, 0.15, 11);
 
 counter = 1;
 
@@ -10,7 +10,7 @@ for vx = Vx_range
     for vy = Vy_range
         for h = H_range
             % -------- Velocity ---------
-            bounds = TwoStep_SS_default_c_frost.utils.getBounds(robot, vy);
+            bounds = TwoStep_SS_default_c_frost.utils.getBounds(robot, vx, vy, h);
             
             nlp.updateVariableBounds(bounds);
             nlp.Phase(1).updateConstrProp('average_hip_abduction_RightStance', 'last', 'lb', bounds.RightStance.average_hip_abduction.lb, 'ub', bounds.RightStance.average_hip_abduction.ub);
@@ -40,6 +40,16 @@ for vx = Vx_range
                 nlp.Phase(3).ConstrTable.u_rightToeHeight_cassie(k).updateProp('lb', -Inf, 'ub', Inf);
             end
             nlp.Phase(3).ConstrTable.u_rightToeHeight_cassie(end).updateProp('lb', 2*step_height, 'ub', 2*step_height);
+            
+            nlp.Phase(1).ConstrTable.swing_knee_velocity_RightStance(end).updateProp('lb', bounds.RightStance.swing_knee_vel.lb, 'ub', bounds.RightStance.swing_knee_vel.ub);
+            nlp.Phase(3).ConstrTable.swing_knee_velocity_LeftStance(end).updateProp('lb', bounds.LeftStance.swing_knee_vel.lb, 'ub', bounds.LeftStance.swing_knee_vel.ub);
+            
+            nlp.Phase(1).ConstrTable.swing_toe_linear_velocity_x_RightStance(end).updateProp('lb', bounds.RightStance.swing_toe_vel_x.lb, 'ub', bounds.RightStance.swing_toe_vel_x.ub);
+            nlp.Phase(3).ConstrTable.swing_toe_linear_velocity_x_LeftStance(end).updateProp('lb', bounds.LeftStance.swing_toe_vel_x.lb, 'ub', bounds.LeftStance.swing_toe_vel_x.ub);
+            nlp.Phase(1).ConstrTable.swing_toe_linear_velocity_y_RightStance(end).updateProp('lb', bounds.RightStance.swing_toe_vel_y.lb, 'ub', bounds.RightStance.swing_toe_vel_y.ub);
+            nlp.Phase(3).ConstrTable.swing_toe_linear_velocity_y_LeftStance(end).updateProp('lb', bounds.LeftStance.swing_toe_vel_y.lb, 'ub', bounds.LeftStance.swing_toe_vel_y.ub);
+            nlp.Phase(1).ConstrTable.swing_toe_linear_velocity_z_RightStance(end).updateProp('lb', bounds.RightStance.swing_toe_vel_z.lb, 'ub', bounds.RightStance.swing_toe_vel_z.ub);
+            nlp.Phase(3).ConstrTable.swing_toe_linear_velocity_z_LeftStance(end).updateProp('lb', bounds.LeftStance.swing_toe_vel_z.lb, 'ub', bounds.LeftStance.swing_toe_vel_z.ub);
             
             nlp.update();
             

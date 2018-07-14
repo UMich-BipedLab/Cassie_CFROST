@@ -41,7 +41,7 @@ nlp.Phase(4).Plant.UserNlpConstraint = @TwoStep_SS_default_c_frost.opt.right_imp
 nlp.update;
 
 % Configure bounds and update
-bounds = TwoStep_SS_default_c_frost.utils.getBounds(robot, false);
+bounds = TwoStep_SS_default_c_frost.utils.getBounds(robot, 0, 0, 0);
 if LOAD
     nlp.configure(bounds, PATHS.OPT_LOAD);
 else
