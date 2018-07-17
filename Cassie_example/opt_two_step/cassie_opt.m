@@ -1,5 +1,5 @@
 %% Setup
-clear; clc; restoredefaultpath; matlabrc; if(exist('startup.m', 'file')); startup; end;
+clear; clc; restoredefaultpath; matlabrc; if(exist('startup.m', 'file')); startup; end
 
 root = fileparts(fileparts(fileparts(fileparts(pwd))));
 addpath(root);

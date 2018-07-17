@@ -5,13 +5,12 @@ paths = struct;
 
 paths.EXPORT = [ROOT_PATH, '\gen'];
 paths.RES = [ROOT_PATH, '\res'];
-paths.FROST = [ROOT_PATH, '\..\frost-dev'];
-paths.C_FROST = [ROOT_PATH, '\..\C-Frost\Matlab'];
-paths.MODEL = [ROOT_PATH, '\..\Cassie_Model'];
-paths.UTILS = [ROOT_PATH, '\..\utils'];
-paths.MODEL_LOAD = [paths.MODEL, '\gen\sym'];
-paths.OPT_LOAD = [paths.EXPORT, '\sym\'];
-paths.OPT_EXPORT = [paths.EXPORT, '\opt'];
+paths.FROST = [ROOT_PATH, '\submodules\frost-dev'];
+paths.C_FROST = [ROOT_PATH, '\submodules\C-Frost\Matlab'];
+paths.MODEL = [ROOT_PATH, '\submodules\Cassie_Model'];
+% paths.MODEL_LOAD = [paths.MODEL, '\gen\sym'];
+% paths.OPT_LOAD = [paths.EXPORT, '\sym\'];
+% paths.OPT_EXPORT = [paths.EXPORT, '\opt'];
 
 % Create Directories
 create_directory(paths);

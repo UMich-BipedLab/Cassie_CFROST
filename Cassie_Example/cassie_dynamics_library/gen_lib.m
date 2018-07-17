@@ -1,7 +1,8 @@
 %% Setup
-restoredefaultpath; matlabrc; clear; clc;
-root = fileparts(pwd);
+clear; clc; restoredefaultpath; matlabrc; if(exist('startup.m', 'file')); startup; end
+root = fileparts(fileparts(pwd));
 addpath(root);
+addpath([root,'/Cassie_example']);
 PATHS = cassie.utils.getPaths(root);
 frost_addpath;
 
@@ -9,7 +10,7 @@ frost_addpath;
 OMIT_CORIOLIS = true;
 
 % Load hybrid system
-robot = Cassie([PATHS.MODEL,'\urdf\cassie_with_sensors.urdf']);
+robot = Cassie([PATHS.MODEL,'\urdf\cassie.urdf']);
 robot.configureDynamics('DelayCoriolisSet',false,'OmitCoriolisSet',OMIT_CORIOLIS);
 [sys, domains, guards] = cassie.load_behavior(robot, '');
 
