@@ -1,3 +1,9 @@
 [submodule "Cassie_Model"]
 	path = Cassie_Model
 	url = https://github.com/UMich-BipedLab/Cassie_Model.git
+[submodule "C-Frost"]
+	path = C-Frost
+	url = https://github.com/UMich-BipedLab/C-Frost.git
+[submodule "frost-dev"]
+	path = frost-dev
+	url = https://github.com/ayonga/frost-dev.git
