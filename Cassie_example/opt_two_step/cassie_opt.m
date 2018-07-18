@@ -121,18 +121,18 @@ solver = IpoptApplication(nlp, ipopt_options);
 % [sol, info] = optimize(solver);
 
 %% Create c-frost problem
-ROOT_PATH = 'periodic';
-c_code_path = fullfile(ROOT_PATH, 'c_code');
-src_path = fullfile(ROOT_PATH, 'c_code', 'src');
-src_gen_path = fullfile(ROOT_PATH, 'c_code', 'src', 'gen');
-include_dir = fullfile(ROOT_PATH, 'c_code', 'include');
-data_path = fullfile(ROOT_PATH, 'c_code', 'res');
-data_path_lib = fullfile(ROOT_PATH, 'c_code', 'res_lib');
-local_path = fullfile(ROOT_PATH, 'local');
-local_res_path = fullfile(ROOT_PATH, 'local', 'res');
-local_output_path = fullfile(ROOT_PATH, 'local', 'output');
-local_output_lib_path = fullfile(ROOT_PATH, 'local', 'output_lib');
-local_log_path = fullfile(ROOT_PATH, 'local', 'log');
+CFROST_OPT_PATH = 'periodic';
+c_code_path = fullfile(CFROST_OPT_PATH, 'c_code');
+src_path = fullfile(CFROST_OPT_PATH, 'c_code', 'src');
+src_gen_path = fullfile(CFROST_OPT_PATH, 'c_code', 'src', 'gen');
+include_dir = fullfile(CFROST_OPT_PATH, 'c_code', 'include');
+data_path = fullfile(CFROST_OPT_PATH, 'c_code', 'res');
+data_path_lib = fullfile(CFROST_OPT_PATH, 'c_code', 'res_lib');
+local_path = fullfile(CFROST_OPT_PATH, 'local');
+local_res_path = fullfile(CFROST_OPT_PATH, 'local', 'res');
+local_output_path = fullfile(CFROST_OPT_PATH, 'local', 'output');
+local_output_lib_path = fullfile(CFROST_OPT_PATH, 'local', 'output_lib');
+local_log_path = fullfile(CFROST_OPT_PATH, 'local', 'log');
 
 if GENERATE_C
     if ~exist(c_code_path, 'dir')
@@ -179,10 +179,10 @@ if GENERATE_C
     copyfile(fullfile('res', 'init.json'), fullfile(data_path, 'init.json'));
     
     if ~exist(fullfile(c_code_path, 'CMakeLists.txt'), 'file')
-        copyfile(fullfile(PATHS.RES, 'CMakeLists_sample.txt'), fullfile(c_code_path, 'CMakeLists.txt'));
+        copyfile(fullfile('res', 'CMakeLists_sample.txt'), fullfile(c_code_path, 'CMakeLists.txt'));
     end
-    if ~exist(fullfile(ROOT_PATH, 'ipopt.opt'), 'file')
-        copyfile(fullfile(PATHS.RES, 'ipopt.opt'), fullfile(ROOT_PATH, 'ipopt.opt'));
+    if ~exist(fullfile(CFROST_OPT_PATH, 'ipopt.opt'), 'file')
+        copyfile(fullfile('res', 'ipopt.opt'), fullfile(CFROST_OPT_PATH, 'ipopt.opt'));
     end
     copyfile(fullfile('res', 'run_all.sh'), fullfile(c_code_path, 'run_all.sh'));
 end

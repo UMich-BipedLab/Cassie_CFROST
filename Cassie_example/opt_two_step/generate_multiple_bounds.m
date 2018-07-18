@@ -10,7 +10,7 @@ for vx = Vx_range
     for vy = Vy_range
         for h = H_range
             % -------- Velocity ---------
-            bounds = TwoStep_SS_default_c_frost.utils.getBounds(robot, vx, vy, h);
+            bounds = two_step.utils.getBounds(robot, vx, vy, h);
             
             nlp.updateVariableBounds(bounds);
             nlp.Phase(1).updateConstrProp('average_hip_abduction_RightStance', 'last', 'lb', bounds.RightStance.average_hip_abduction.lb, 'ub', bounds.RightStance.average_hip_abduction.ub);
