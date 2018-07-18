@@ -1,47 +1,51 @@
 %% Setup
 clear; clc; restoredefaultpath; matlabrc; if(exist('startup.m', 'file')); startup; end
-
-root = fileparts(fileparts(fileparts(fileparts(pwd))));
-addpath(root);
-PATHS = cassie.utils.getPaths(root);
+cur = pwd;
+root = fileparts(fileparts(cur));
+addpath(fullfile(root, 'Cassie_example'));
+addpath(fullfile(root, 'submodules','Cassie_Model'));
+addpath(fullfile(root, 'submodules','frost-dev'));
+addpath(fullfile(root, 'submodules','C-Frost','Matlab'));
+addpath(fullfile(root, 'Cassie_example', 'cassie_dynamics_library', 'mex'));
 frost_addpath;
-addpath(fullfile(cassie.getRootPath(), 'cassie_dynamics_library', 'mex'));
+
 mkdir('gen');
 mkdir('gen/opt');
 addpath(genpath('gen'));
 
 % Settings
 LOAD = false;
-COMPILE = false;
+COMPILE = true;
 SAVE = false;
-GENERATE_C = false;
-GENERATE_C_COMPILE = false;
+GENERATE_C = true;
+GENERATE_C_COMPILE = true;
+OMIT_CORIOLIS = true;
 
 % Load hybrid system
-robot = Cassie([PATHS.MODEL,'\urdf\cassie_with_sensors.urdf']);
+robot = Cassie(fullfile(root, 'submodules','Cassie_Model','urdf','cassie.urdf'));
 if LOAD
     robot.loadDynamics(PATHS.MODEL_LOAD, true);
     [sys, domains, guards] = cassie.load_behavior(robot, PATHS.OPT_LOAD);
 else
-    robot.configureDynamics('DelayCoriolisSet',true,'OmitCoriolisSet',true);
+    robot.configureDynamics('DelayCoriolisSet',OMIT_CORIOLIS,'OmitCoriolisSet',OMIT_CORIOLIS);
     [sys, domains, guards] = cassie.load_behavior(robot, '');
 end
 
 %% Create optimization problem
 num_grid.RightStance = 10;
 num_grid.LeftStance = 10;
-nlp = HybridTrajectoryOptimization('Cassie_TwoStep_SS',sys,num_grid,[],'EqualityConstraintBoundary',1e-4);
+nlp = HybridTrajectoryOptimization('two_step',sys,num_grid,[],'EqualityConstraintBoundary',1e-4);
 nlp.update;
 
 % Add domain specific constraints
-nlp.Phase(1).Plant.UserNlpConstraint = @TwoStep_SS_default_c_frost.opt.right_stance;
-nlp.Phase(2).Plant.UserNlpConstraint = @TwoStep_SS_default_c_frost.opt.left_impact;
-nlp.Phase(3).Plant.UserNlpConstraint = @TwoStep_SS_default_c_frost.opt.left_stance;
-nlp.Phase(4).Plant.UserNlpConstraint = @TwoStep_SS_default_c_frost.opt.right_impact;
+nlp.Phase(1).Plant.UserNlpConstraint = @two_step.opt.right_stance;
+nlp.Phase(2).Plant.UserNlpConstraint = @two_step.opt.left_impact;
+nlp.Phase(3).Plant.UserNlpConstraint = @two_step.opt.left_stance;
+nlp.Phase(4).Plant.UserNlpConstraint = @two_step.opt.right_impact;
 nlp.update;
 
 % Configure bounds and update
-bounds = TwoStep_SS_default_c_frost.utils.getBounds(robot, 0, 0, 0);
+bounds = two_step.utils.getBounds(robot, 0, 0, 0);
 if LOAD
     nlp.configure(bounds, PATHS.OPT_LOAD);
 else
@@ -49,7 +53,7 @@ else
 end
 
 % Add Multi-domain constraints
-nlp = TwoStep_SS_default_c_frost.opt.multi_domain_constraints(nlp);
+nlp = two_step.opt.multi_domain_constraints(nlp);
 nlp.update;
 
 

@@ -1,4 +1,4 @@
-function bounds = getBounds(robot)
+function bounds = getBounds(robot, vx, vy, height)
 
 % Get Bounds
 model_bounds = robot.getLimits();
@@ -7,14 +7,26 @@ bounds = struct();
 model_bounds.states.x.lb(1:3) = [-10,-10,-10];
 model_bounds.states.x.ub(1:3) = [10,10,10];
 
-model_bounds.states.x.lb(4:6) = deg2rad(-5);
-model_bounds.states.x.ub(4:6) = deg2rad(5);
+model_bounds.states.x.lb(4) = deg2rad(-0.1);
+model_bounds.states.x.ub(4) = deg2rad(0.1);
+model_bounds.states.x.lb(5:6) = deg2rad(-3);
+model_bounds.states.x.ub(5:6) = deg2rad(3);
 
-model_bounds.states.x.lb([7,8,14,15]) = deg2rad(-5);
-model_bounds.states.x.ub([7,8,14,15]) = deg2rad(5);
+model_bounds.states.x.lb([7,8,14,15]) = max(deg2rad(-1.5 - 70*abs(vy)), model_bounds.states.x.lb([7,8,14,15]));
+model_bounds.states.x.ub([7,8,14,15]) = min(deg2rad(+1.5 + 70*abs(vy)), model_bounds.states.x.ub([7,8,14,15]));
 
 model_bounds.inputs.Control.u.lb([5,10]) = -0.01;
 model_bounds.inputs.Control.u.ub([5,10]) = 0.01;
+
+model_bounds.swing_knee_vel.lb = -30; % Effectively -inf
+model_bounds.swing_knee_vel.ub = 30; % Effectively +inf
+
+model_bounds.swing_toe_vel_x.lb = 0;%-abs(vx)*0.3;
+model_bounds.swing_toe_vel_x.ub = 0;%+abs(vx)*0.3;
+model_bounds.swing_toe_vel_y.lb = 0;
+model_bounds.swing_toe_vel_y.ub = 0;
+model_bounds.swing_toe_vel_z.lb = -2;
+model_bounds.swing_toe_vel_z.ub = 0;
 
 model_bounds.average_pitch.lb = deg2rad(0);
 model_bounds.average_pitch.ub = deg2rad(0);
@@ -22,17 +34,17 @@ model_bounds.average_pitch.ub = deg2rad(0);
 model_bounds.average_yaw.lb = deg2rad(0);
 model_bounds.average_yaw.ub = deg2rad(0);
 
-model_bounds.average_hip_abduction.lb = deg2rad(0);
-model_bounds.average_hip_abduction.ub = deg2rad(0);
+model_bounds.average_hip_abduction.lb = deg2rad(-70*abs(vy));
+model_bounds.average_hip_abduction.ub = deg2rad(+70*abs(vy));
 
-model_bounds.average_hip_rotation.lb = deg2rad(0);
-model_bounds.average_hip_rotation.ub = deg2rad(0);
+model_bounds.average_hip_rotation.lb = deg2rad(-70*abs(vy));
+model_bounds.average_hip_rotation.ub = deg2rad(+70*abs(vy));
 
-model_bounds.step_length.lb = 0.4;
-model_bounds.step_length.ub = 0.4;
+model_bounds.average_velocity.lb = 0.0;
+model_bounds.average_velocity.ub = 0.0;
 
 model_bounds.foot_clearance.lb = 0.15;
-model_bounds.foot_clearance.ub = 0.2;
+model_bounds.foot_clearance.ub = 0.155;
 
 model_bounds.distance_pelvis_to_stance_toe.lb = 0.5;
 model_bounds.distance_pelvis_to_stance_toe.ub = 1.0;
@@ -42,6 +54,9 @@ model_bounds.toe_to_toe_width.ub = -0.10;
 
 %% Right Stance
 bounds.RightStance = model_bounds;
+
+% bounds.RightStance.states.dx.lb(17) = max(deg2rad(-3), bounds.RightStance.states.dx.lb(17));
+% bounds.RightStance.states.dx.ub(17) = min(deg2rad(+3), bounds.RightStance.states.dx.ub(17));
 
 bounds.RightStance.time.t0.lb = 0;
 bounds.RightStance.time.t0.ub = 0;
@@ -95,6 +110,9 @@ bounds.RightStance.time.kd = 20;
 %% Left Stance
 bounds.LeftStance = model_bounds;
 
+% bounds.RightStance.states.dx.lb(10) = max(deg2rad(-3), bounds.RightStance.states.dx.lb(10));
+% bounds.RightStance.states.dx.ub(10) = min(deg2rad(+3), bounds.RightStance.states.dx.ub(10));
+
 bounds.LeftStance.time.t0.lb = 0;
 bounds.LeftStance.time.t0.ub = 0;
 bounds.LeftStance.time.t0.x0 = 0;
@@ -135,9 +153,9 @@ bounds.LeftStance.params.atime.lb = -10*ones(6*10,1);
 bounds.LeftStance.params.atime.ub = 10*ones(6*10,1);
 bounds.LeftStance.params.atime.x0 = zeros(6*10,1);
 
-bounds.LeftStance.params.ptime.lb = [bounds.RightStance.time.tf.lb, bounds.RightStance.time.t0.lb];
-bounds.LeftStance.params.ptime.ub = [bounds.RightStance.time.tf.ub, bounds.RightStance.time.t0.ub];
-bounds.LeftStance.params.ptime.x0 = [bounds.RightStance.time.t0.x0, bounds.RightStance.time.tf.x0];
+bounds.LeftStance.params.ptime.lb = [bounds.LeftStance.time.tf.lb, bounds.LeftStance.time.t0.lb];
+bounds.LeftStance.params.ptime.ub = [bounds.LeftStance.time.tf.ub, bounds.LeftStance.time.t0.ub];
+bounds.LeftStance.params.ptime.x0 = [bounds.LeftStance.time.t0.x0, bounds.LeftStance.time.tf.x0];
 
 bounds.LeftStance.time.kp = 100;
 bounds.LeftStance.time.kd = 20;
