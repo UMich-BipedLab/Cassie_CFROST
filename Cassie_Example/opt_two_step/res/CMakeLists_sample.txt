@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 2.8)
 project(frost_ipopt)
-set(C_FROST_ROOT_PATH "/mnt/c/Users/Ross Hartley/Documents/GitHub/Ross_Cassie_Controllers/submodules/C-Frost")
-set(CASSIE_DYNAMICS_LIBRARY_DIRS "/mnt/c/Users/Ross Hartley/Documents/GitHub/Ross_Cassie_Controllers/submodules/Cassie_FROST/cassie_dynamics_library")
+set(C_FROST_ROOT_PATH "ROOT_PATH/submodules/C-Frost")
+set(CASSIE_DYNAMICS_LIBRARY_DIRS "ROOT_PATH/Cassie_Example/cassie_dynamics_library")
 set(IPOPT_LIBRARY_DIRS /usr/local/lib)
 set(IPOPT_INCLUDE_DIRS /usr/local/include/coin)
 

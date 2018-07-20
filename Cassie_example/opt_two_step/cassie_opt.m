@@ -1,31 +1,31 @@
 %% Setup
 clear; clc; restoredefaultpath; matlabrc; if(exist('startup.m', 'file')); startup; end
-cur = pwd;
-root = fileparts(fileparts(cur));
+
+root = get_root_path();
 addpath(fullfile(root, 'Cassie_example'));
 addpath(fullfile(root, 'submodules','Cassie_Model'));
 addpath(fullfile(root, 'submodules','frost-dev'));
 addpath(fullfile(root, 'submodules','C-Frost','Matlab'));
 addpath(fullfile(root, 'Cassie_example', 'cassie_dynamics_library', 'mex'));
 frost_addpath;
+if ~exist('gen/opt','dir')
+    mkdir('gen','opt');
+end
+addpath('gen/opt');
 
-mkdir('gen');
-mkdir('gen/opt');
-addpath(genpath('gen'));
-
-% Settings
-LOAD = false;
-COMPILE = true;
-SAVE = false;
-GENERATE_C = true;
-GENERATE_C_COMPILE = true;
-OMIT_CORIOLIS = true;
-
-% Load hybrid system
+%% Settings
+LOAD = false;  % load symbolic expressions instead of direct evaluation to save time, must save the symbolic expresssion first 
+COMPILE = true; % compile MEX binaries
+SAVE = true;    % save symbolic expressions for load directly
+GENERATE_C = true; % generate files for C-FROST
+GENERATE_C_COMPILE = true; % generate C++ source and header files for C-FROST
+OMIT_CORIOLIS = true; % drop velocity terms
+RUN_MATLAB_OPT = false; % run the optimization in MATLAB
+%% Load hybrid system
 robot = Cassie(fullfile(root, 'submodules','Cassie_Model','urdf','cassie.urdf'));
 if LOAD
-    robot.loadDynamics(PATHS.MODEL_LOAD, true);
-    [sys, domains, guards] = cassie.load_behavior(robot, PATHS.OPT_LOAD);
+    robot.loadDynamics('gen/sym', OMIT_CORIOLIS);
+    [sys, domains, guards] = cassie.load_behavior(robot, 'gen/sym');
 else
     robot.configureDynamics('DelayCoriolisSet',OMIT_CORIOLIS,'OmitCoriolisSet',OMIT_CORIOLIS);
     [sys, domains, guards] = cassie.load_behavior(robot, '');
@@ -47,7 +47,7 @@ nlp.update;
 % Configure bounds and update
 bounds = two_step.utils.getBounds(robot, 0, 0, 0);
 if LOAD
-    nlp.configure(bounds, PATHS.OPT_LOAD);
+    nlp.configure(bounds, 'gen/sym');
 else
     nlp.configure(bounds);
 end
@@ -61,13 +61,14 @@ nlp.update;
 if COMPILE
     compileObjective(nlp, [], [], fullfile('gen', 'opt'));
     compileConstraint(nlp, [], [], fullfile('gen', 'opt'), 'dynamics_equation');
-%     nlp.Phase(3).ConstrTable.dynamics_equation(1).SummandFunctions(end).SymFun.export(PATHS.OPT_EXPORT, 'ForceExport',true)
-%     nlp.Phase(3).ConstrTable.dynamics_equation(1).SummandFunctions(end).SymFun.exportJacobian(PATHS.OPT_EXPORT, 'ForceExport',true)
 end
 
 % Save
 if SAVE
-    sys.saveExpression(PATHS.OPT_LOAD);
+    if ~exist('gen/sym','dir')
+        mkdir('gen','sym');
+    end
+    sys.saveExpression('gen/sym');
 end
 
 % Compile Single Constraint
@@ -82,12 +83,12 @@ end
 %% Update bounds
 
 % -------- Velocity ---------
-velocity = [1;0.3];
+velocity = [0.0;0.0];
 nlp.Phase(1).updateConstrProp('average_velocity_RightStance', 'last', 'lb', velocity, 'ub', velocity);
 nlp.Phase(3).updateConstrProp('average_velocity_LeftStance', 'last', 'lb', velocity, 'ub', velocity);
 
 % ------- Step Height ---------
-step_height = 0.2;
+step_height = 0.0;
 % Right Stance Guard
 for k = 1:length(nlp.Phase(1).ConstrTable.u_leftToeHeight_cassie)-1
     nlp.Phase(1).ConstrTable.u_leftToeHeight_cassie(k).updateProp('lb', -Inf, 'ub', Inf);
@@ -102,39 +103,28 @@ nlp.Phase(3).ConstrTable.u_rightToeHeight_cassie(end).updateProp('lb', 2*step_he
 
 
 
-%% Create Optimization Problem 
-
-% Create Ipopt solver
-ipopt_options.max_iter         = 3000;
-ipopt_options.tol              = 1e-2;
-ipopt_options.dual_inf_tol           = 0e0;
-ipopt_options.constr_viol_tol        = 1e-4;
-ipopt_options.compl_inf_tol          = 1e0;
-    
-solver = IpoptApplication(nlp, ipopt_options);
-% solver = IpoptApplication(nlp);
-
 %% Run Optimization in Matlab
-% x0 = loadjson(fullfile('res', 'init.json');
-% x0 = x0';
-% [sol, info] = optimize(solver, x0);
-% [sol, info] = optimize(solver);
-
+if RUN_MATLAB_OPT
+    x0 = loadjson(fullfile('res', 'init.json'));
+    x0 = x0';
+    [gait, sol, info, total_time] = two_step.utils.solve(nlp, x0);
+end
 %% Create c-frost problem
-CFROST_OPT_PATH = 'periodic';
-c_code_path = fullfile(CFROST_OPT_PATH, 'c_code');
-src_path = fullfile(CFROST_OPT_PATH, 'c_code', 'src');
-src_gen_path = fullfile(CFROST_OPT_PATH, 'c_code', 'src', 'gen');
-include_dir = fullfile(CFROST_OPT_PATH, 'c_code', 'include');
-data_path = fullfile(CFROST_OPT_PATH, 'c_code', 'res');
-data_path_lib = fullfile(CFROST_OPT_PATH, 'c_code', 'res_lib');
-local_path = fullfile(CFROST_OPT_PATH, 'local');
-local_res_path = fullfile(CFROST_OPT_PATH, 'local', 'res');
-local_output_path = fullfile(CFROST_OPT_PATH, 'local', 'output');
-local_output_lib_path = fullfile(CFROST_OPT_PATH, 'local', 'output_lib');
-local_log_path = fullfile(CFROST_OPT_PATH, 'local', 'log');
-
 if GENERATE_C
+    CFROST_OPT_PATH = 'periodic';
+    c_code_path = fullfile(CFROST_OPT_PATH, 'c_code');
+    src_path = fullfile(CFROST_OPT_PATH, 'c_code', 'src');
+    src_gen_path = fullfile(CFROST_OPT_PATH, 'c_code', 'src', 'gen');
+    include_dir = fullfile(CFROST_OPT_PATH, 'c_code', 'include');
+    data_path = fullfile(CFROST_OPT_PATH, 'c_code', 'res');
+    data_path_lib = fullfile(CFROST_OPT_PATH, 'c_code', 'res_lib');
+    local_path = fullfile(CFROST_OPT_PATH, 'local');
+    local_res_path = fullfile(CFROST_OPT_PATH, 'local', 'res');
+    local_output_path = fullfile(CFROST_OPT_PATH, 'local', 'output');
+    local_output_lib_path = fullfile(CFROST_OPT_PATH, 'local', 'output_lib');
+    local_log_path = fullfile(CFROST_OPT_PATH, 'local', 'log');
+
+    
     if ~exist(c_code_path, 'dir')
         mkdir(c_code_path);
     end
@@ -163,6 +153,8 @@ if GENERATE_C
         mkdir(local_log_path);
     end
     
+    solver = IpoptApplication(nlp);
+    
     if GENERATE_C_COMPILE
         [funcs, map] = frost_c.getAllFuncs(solver);
         frost_c.createFunctionListHeader(funcs, src_path, include_dir);
@@ -173,13 +165,28 @@ if GENERATE_C
         frost_c.createObjectives(nlp,[],[],src_gen_path, include_dir);
     end
     load(fullfile(local_res_path, 'funcs'))
+    
+    
     frost_c.createDataFile(solver, funcs, data_path, 'data');
     frost_c.createBoundsFile(solver, funcs, data_path, 'bounds');
     % frost_c.createInitialGuess(solver, data_path);
     copyfile(fullfile('res', 'init.json'), fullfile(data_path, 'init.json'));
     
     if ~exist(fullfile(c_code_path, 'CMakeLists.txt'), 'file')
-        copyfile(fullfile('res', 'CMakeLists_sample.txt'), fullfile(c_code_path, 'CMakeLists.txt'));
+        if ispc 
+            root_path_str = strrep(strrep(strrep(root,'\','/'),'D:','/mnt/d'),'C:','/mnt/c');
+        elseif isunix
+            root_path_str = root;
+        end
+        
+        fid = fopen('res/CMakeLists_sample.txt');
+        F = fread(fid, '*char')';
+        fclose(fid);
+        F=strrep(F, 'ROOT_PATH', root_path_str);
+        fid = fopen(fullfile(c_code_path, 'CMakeLists.txt'), 'w');
+        fwrite(fid, F);
+        fclose(fid);
+        %         copyfile(fullfile('res', 'CMakeLists_sample.txt'), fullfile(c_code_path, 'CMakeLists.txt'));
     end
     if ~exist(fullfile(CFROST_OPT_PATH, 'ipopt.opt'), 'file')
         copyfile(fullfile('res', 'ipopt.opt'), fullfile(CFROST_OPT_PATH, 'ipopt.opt'));
@@ -195,21 +202,4 @@ end
 % frost_c.createConstraints(nlp, 1, 'dynamics_equation', 'cassie_dynamics/src/gen/', 'cassie_dynamics/include',[])
 % frost_c.createConstraints(nlp, 3, 'dynamics_equation', 'cassie_dynamics/src/gen/', 'cassie_dynamics/include',[])
 
-%% Load c_frost results
-%sol = loadjson(fullfile(local_output_path,'output.json'));
-sol = loadjson(fullfile(data_path,'init.json'));
 
-%% Extract optimization results
-[tspan, states, inputs, params] = exportSolution(nlp, sol);
-solution.x = sol;
-solution.tspan = tspan;
-solution.states = states;
-solution.inputs = inputs;
-solution.params = params;
- 
-% checkConstraints(nlp, sol, 1e-4, 'log.txt')
-
-%% Animate 
-q_log = [solution.states{1}.x, solution.states{3}.x]; 
-t_log = [solution.tspan{1}, solution.tspan{1}(end) + solution.tspan{3}];
-conGUI = cassie.load_animation(robot, t_log, q_log)';
