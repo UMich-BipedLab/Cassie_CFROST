@@ -41,7 +41,7 @@ The last command will move the compiled library `libcassie_dynamics.a` to the `l
 
 ## Generate other functions and optimization configuration files ##
 
-Next, run [`cassie_opt.m`](https://github.com/UMich-BipedLab/Cassie_CFROST/blob/master/Cassie_example/opt_two_step/cassie_opt.m) script in MATLAB to generate other functions and configuration files. This script should create two folders:
+Next, run [`cassie_opt.m`](https://github.com/UMich-BipedLab/Cassie_CFROST/blob/master/Cassie_Example/opt_two_step/cassie_opt.m) script in MATLAB to generate other functions and configuration files. This script should create two folders:
 
 * `gen`: export and compile MEX binaries used for FROST in MATLAB (you can run the optimization in MATLAB as before)
 * `periodic`: export all functions and configuration files required for C-FROST.
@@ -74,7 +74,7 @@ The input arguments are:
 * --solution: the output file to export the optimization results (structured data, more information)
 * --output: another output file to export the optimization results (just the vector of solution from IPOPT)
 
-C-FROST will export the optimization results to the specified JSON file. This can be easily imported to MATLAB to further analyze the optimal gait. A simple example of loading this file, see [`analyze_solution.m`](https://github.com/UMich-BipedLab/Cassie_CFROST/blob/master/Cassie_example/opt_two_step/analyze_solution.m).
+C-FROST will export the optimization results to the specified JSON file. This can be easily imported to MATLAB to further analyze the optimal gait. A simple example of loading this file, see [`analyze_solution.m`](https://github.com/UMich-BipedLab/Cassie_CFROST/blob/master/Cassie_Example/opt_two_step/analyze_solution.m).
 
 # Run multiple gait optimization #
 
@@ -82,7 +82,7 @@ With C-FROST, it is easy to run multiple gait optimization in parallel. You do n
 
 In this example, we generate 11x11x11=1,331 gaits with different walking speeds and ground inclinations. This can be done by changing the constraints bounds in the same optimization problem.
 
-In MATLAB, run [`generate_multiple_bounds.m`](https://github.com/UMich-BipedLab/Cassie_CFROST/blob/master/Cassie_example/opt_two_step/generate_multiple_bounds.m) script to generate all bound files first. The process may take a while to finish.
+In MATLAB, run [`generate_multiple_bounds.m`](https://github.com/UMich-BipedLab/Cassie_CFROST/blob/master/Cassie_Example/opt_two_step/generate_multiple_bounds.m) script to generate all bound files first. The process may take a while to finish.
 
 Once done, you can use run multiple optimization in parallel from the terminal. We particularly use [GNU Parallel](https://www.gnu.org/software/parallel/) package for this process.
 ```shell
@@ -94,4 +94,4 @@ You can use `time` to measure the run time:
 time parallel ./program --initial 'res/init.json' --options '../ipopt.opt' --data 'res/data.json' --bounds "res/bounds_{}.json" --solution "../local/output/sol_{}.json" ">" "../local/log/log_{}.txt" ::: {1..1331}
 ```
 
-The optimization results will be saved to `local/output/` folder, and the terminal outputs will be save to `local/log` folder. The scripts [`export_all_gaits.m`](https://github.com/UMich-BipedLab/Cassie_CFROST/blob/master/Cassie_example/opt_two_step/export_all_gaits.m) and [`check_logs.m`](https://github.com/UMich-BipedLab/Cassie_CFROST/blob/master/Cassie_example/opt_two_step/check_logs.m) can be used to import the resuls into MATLAB and check the log files.
+The optimization results will be saved to `local/output/` folder, and the terminal outputs will be save to `local/log` folder. The scripts [`export_all_gaits.m`](https://github.com/UMich-BipedLab/Cassie_CFROST/blob/master/Cassie_Example/opt_two_step/export_all_gaits.m) and [`check_logs.m`](https://github.com/UMich-BipedLab/Cassie_CFROST/blob/master/Cassie_Example/opt_two_step/check_logs.m) can be used to import the resuls into MATLAB and check the log files.
