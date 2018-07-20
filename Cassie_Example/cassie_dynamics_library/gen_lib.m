@@ -1,7 +1,6 @@
 %% Setup
 clear; clc; restoredefaultpath; matlabrc; if(exist('startup.m', 'file')); startup; end
-cur = pwd;
-root = fileparts(fileparts(cur));
+root = get_root_path();
 addpath(fullfile(root, 'Cassie_example'));
 addpath(fullfile(root, 'submodules','Cassie_Model'));
 addpath(fullfile(root, 'submodules','frost-dev'));
@@ -31,3 +30,6 @@ compileConstraint(nlp, 1, 'dynamics_equation', 'mex');
 compileConstraint(nlp, 3, 'dynamics_equation', 'mex');
 frost_c.createConstraints(nlp, 1, 'dynamics_equation', 'src/gen/', 'include/',[])
 frost_c.createConstraints(nlp, 3, 'dynamics_equation', 'src/gen/', 'include/',[])
+
+%%
+disp('Functions are exported successfully. Ready to compile!');
