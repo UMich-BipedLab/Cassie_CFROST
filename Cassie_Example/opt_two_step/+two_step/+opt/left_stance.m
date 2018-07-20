@@ -53,11 +53,11 @@ function left_stance(nlp, bounds, varargin)
         {'x','dx'}, 'last', bounds.swing_toe_vel_z.lb, bounds.swing_toe_vel_z.ub, 'Nonlinear');
     
     %% Swing knee velocity
-    dx = nlp.Plant.States.dx;
-    expression = dx(17);
-    func = SymFunction(['swing_knee_velocity_',nlp.Plant.Name], expression, {nlp.Plant.States.dx});
-    addNodeConstraint(nlp, func, ...
-        {'dx'}, 'last',  bounds.swing_knee_vel.lb,  bounds.swing_knee_vel.ub, 'Linear');
+    %     dx = nlp.Plant.States.dx;
+    %     expression = dx(17);
+    %     func = SymFunction(['swing_knee_velocity_',nlp.Plant.Name], expression, {nlp.Plant.States.dx});
+    %     addNodeConstraint(nlp, func, ...
+    %         {'dx'}, 'last',  bounds.swing_knee_vel.lb,  bounds.swing_knee_vel.ub, 'Linear');
     
     %% Average pitch
     average_pitch_cstr = NlpFunction('Name',['average_pitch_', domain.Name],...

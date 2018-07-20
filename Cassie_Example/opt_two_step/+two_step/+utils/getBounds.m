@@ -40,8 +40,8 @@ model_bounds.average_hip_abduction.ub = deg2rad(+70*abs(vy));
 model_bounds.average_hip_rotation.lb = deg2rad(-70*abs(vy));
 model_bounds.average_hip_rotation.ub = deg2rad(+70*abs(vy));
 
-model_bounds.average_velocity.lb = 0.0;
-model_bounds.average_velocity.ub = 0.0;
+model_bounds.average_velocity.lb = [vx,vy];
+model_bounds.average_velocity.ub = [vx,vy];
 
 model_bounds.foot_clearance.lb = 0.15;
 model_bounds.foot_clearance.ub = 0.155;
