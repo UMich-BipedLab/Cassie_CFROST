@@ -17,26 +17,16 @@ for vx = Vx_range
             step_height = h;
 
             %% Load c_frost results
-            sol = loadjson(fullfile(local_output_lib_path, sprintf('output_%d.json', counter)));
+            file_name = fullfile(local_output_lib_path, sprintf('output_%d.json', counter));
+            [gait, sol, info] = load_result(nlp, file_name);
 
             %% Extract optimization results
-            [tspan, states, inputs, params] = exportSolution(nlp, sol);
-            solution = struct();
-            solution.x = sol;
-            solution.tspan = tspan;
-            solution.states = states;
-            solution.inputs = inputs;
-            solution.params = params;
             
-            gait = struct();
-            gait.opt = solution;
-            gait.velocity = velocity;
-            gait.step_height = step_height;
             
-            save(fullfile(local_path, 'mat_output', sprintf('gait_%d', counter)), 'solution');
+            save(fullfile(local_path, 'mat_output', sprintf('gait_%d', counter)), 'gait','sol','info');
             
             if h == 0 && vy == 0
-                GaitLibrary = [GaitLibrary, gait];
+                GaitLibrary = [GaitLibrary, gait]; %#ok<AGROW>
             end
             
             counter = counter + 1;
