@@ -191,7 +191,6 @@ if GENERATE_C
     if ~exist(fullfile(CFROST_OPT_PATH, 'ipopt.opt'), 'file')
         copyfile(fullfile('res', 'ipopt.opt'), fullfile(CFROST_OPT_PATH, 'ipopt.opt'));
     end
-    copyfile(fullfile('res', 'run_all.sh'), fullfile(c_code_path, 'run_all.sh'));
 end
 
 % Example commands
