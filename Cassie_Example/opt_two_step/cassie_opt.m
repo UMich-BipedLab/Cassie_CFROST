@@ -1,18 +1,21 @@
 %% Setup
-clear; clc; restoredefaultpath; matlabrc; if(exist('startup.m', 'file')); startup; end
+clear; clc; if(exist('startup.m', 'file')); startup; end
 
 root = get_root_path();
-addpath(fullfile(root, 'Cassie_example'));
+addpath(fullfile(root, 'Cassie_Example'));
 addpath(fullfile(root, 'submodules','Cassie_Model'));
 addpath(fullfile(root, 'submodules','frost-dev'));
 addpath(fullfile(root, 'submodules','C-Frost','Matlab'));
-addpath(fullfile(root, 'Cassie_example', 'cassie_dynamics_library', 'mex'));
+addpath(fullfile(root, 'Cassie_Example', 'cassie_dynamics_library', 'mex'));
 frost_addpath;
-if ~exist('gen/opt','dir')
-    mkdir('gen','opt');
-end
-addpath('gen/opt');
 
+
+LOAD_PATH = fullfile(root,'Cassie_Example','opt_two_step','gen', 'sym');
+EXPORT_PATH = fullfile(root,'Cassie_Example','opt_two_step','gen', 'opt');
+if ~exist(EXPORT_PATH,'dir')
+    mkdir(EXPORT_PATH);
+end
+addpath(EXPORT_PATH);
 %% Settings
 LOAD = false;  % load symbolic expressions instead of direct evaluation to save time, must save the symbolic expresssion first 
 COMPILE = true; % compile MEX binaries
@@ -20,12 +23,12 @@ SAVE = true;    % save symbolic expressions for load directly
 GENERATE_C = true; % generate files for C-FROST
 GENERATE_C_COMPILE = true; % generate C++ source and header files for C-FROST
 OMIT_CORIOLIS = true; % drop velocity terms
-RUN_MATLAB_OPT = false; % run the optimization in MATLAB
+RUN_MATLAB_OPT = true; % run the optimization in MATLAB
 %% Load hybrid system
 robot = Cassie(fullfile(root, 'submodules','Cassie_Model','urdf','cassie.urdf'));
 if LOAD
-    robot.loadDynamics('gen/sym', OMIT_CORIOLIS);
-    [sys, domains, guards] = cassie.load_behavior(robot, 'gen/sym');
+    robot.loadDynamics(LOAD_PATH, OMIT_CORIOLIS,{},'OmitCoriolisSet',OMIT_CORIOLIS);
+    [sys, domains, guards] = cassie.load_behavior(robot, LOAD_PATH);
 else
     robot.configureDynamics('DelayCoriolisSet',OMIT_CORIOLIS,'OmitCoriolisSet',OMIT_CORIOLIS);
     [sys, domains, guards] = cassie.load_behavior(robot, '');
@@ -47,7 +50,7 @@ nlp.update;
 % Configure bounds and update
 bounds = two_step.utils.getBounds(robot, 0, 0, 0);
 if LOAD
-    nlp.configure(bounds, 'gen/sym');
+    nlp.configure(bounds, LOAD_PATH);
 else
     nlp.configure(bounds);
 end
@@ -59,16 +62,16 @@ nlp.update;
 
 %% Compile and Save
 if COMPILE
-    compileObjective(nlp, [], [], fullfile('gen', 'opt'));
-    compileConstraint(nlp, [], [], fullfile('gen', 'opt'), 'dynamics_equation');
+    compileObjective(nlp, [], [], EXPORT_PATH);
+    compileConstraint(nlp, [], [], EXPORT_PATH, 'dynamics_equation');
 end
 
 % Save
 if SAVE
-    if ~exist('gen/sym','dir')
-        mkdir('gen','sym');
+    if ~exist(LOAD_PATH,'dir')
+        mkdir(LOAD_PATH);
     end
-    sys.saveExpression('gen/sym');
+    sys.saveExpression(LOAD_PATH);
 end
 
 % Compile Single Constraint
@@ -109,6 +112,15 @@ if RUN_MATLAB_OPT
     x0 = x0';
     [gait, sol, info, total_time] = two_step.utils.solve(nlp, x0);
 end
+
+%% Animation
+ANIM_PATH = fullfile(root,'Cassie_Example','opt_two_step','gen', 'anim');
+if ~exist(ANIM_PATH,'dir')
+    mkdir(ANIM_PATH);
+end
+skip_export = false; % set it to true after exporting the functions once.
+cassie.load_animation(robot, gait, [], 'ExportPath', ANIM_PATH, 'SkipExporting', false);
+
 %% Create c-frost problem
 if GENERATE_C
     CFROST_OPT_PATH = 'periodic';
@@ -200,5 +212,3 @@ end
 
 % frost_c.createConstraints(nlp, 1, 'dynamics_equation', 'cassie_dynamics/src/gen/', 'cassie_dynamics/include',[])
 % frost_c.createConstraints(nlp, 3, 'dynamics_equation', 'cassie_dynamics/src/gen/', 'cassie_dynamics/include',[])
-
-

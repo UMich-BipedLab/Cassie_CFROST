@@ -1,7 +1,7 @@
 %% Setup
-clear; clc; restoredefaultpath; matlabrc; if(exist('startup.m', 'file')); startup; end
+clear; clc; if(exist('startup.m', 'file')); startup; end
 root = get_root_path();
-addpath(fullfile(root, 'Cassie_example'));
+addpath(fullfile(root, 'Cassie_Example'));
 addpath(fullfile(root, 'submodules','Cassie_Model'));
 addpath(fullfile(root, 'submodules','frost-dev'));
 addpath(fullfile(root, 'submodules','C-Frost','Matlab'));
@@ -25,11 +25,13 @@ addRunningCost(nlp.Phase(1), cassie.costs.torque(nlp.Phase(1)), 'u');
 nlp.update;
 
 %% Create Dynamics Constraints
-mkdir('mex');
+if ~exist('mex','dir')
+    mkdir('mex');
+end
 compileConstraint(nlp, 1, 'dynamics_equation', 'mex');
 compileConstraint(nlp, 3, 'dynamics_equation', 'mex');
-frost_c.createConstraints(nlp, 1, 'dynamics_equation', 'src/gen/', 'include/',[])
-frost_c.createConstraints(nlp, 3, 'dynamics_equation', 'src/gen/', 'include/',[])
+frost_c.createConstraints(nlp, 1, 'dynamics_equation', 'src/', 'include/',[])
+frost_c.createConstraints(nlp, 3, 'dynamics_equation', 'src/', 'include/',[])
 
 %%
 disp('Functions are exported successfully. Ready to compile!');
