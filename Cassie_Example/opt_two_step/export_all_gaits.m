@@ -1,5 +1,5 @@
-Vx_range = linspace(-1, 1, 11);
-Vy_range = linspace(-0.3, 0.3, 11);
+Vx_range = linspace(-0.5, 0.5, 11);
+Vy_range = linspace(0, 0, 1);
 H_range = linspace(-0.15, 0.15, 11);
 
 counter = 1;

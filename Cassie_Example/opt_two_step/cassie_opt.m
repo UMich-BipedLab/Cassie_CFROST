@@ -17,11 +17,11 @@ if ~exist(EXPORT_PATH,'dir')
 end
 addpath(EXPORT_PATH);
 %% Settings
-LOAD = false;  % load symbolic expressions instead of direct evaluation to save time, must save the symbolic expresssion first 
-COMPILE = true; % compile MEX binaries
-SAVE = true;    % save symbolic expressions for load directly
-GENERATE_C = true; % generate files for C-FROST
-GENERATE_C_COMPILE = true; % generate C++ source and header files for C-FROST
+LOAD = true;  % load symbolic expressions instead of direct evaluation to save time, must save the symbolic expresssion first 
+COMPILE = false; % compile MEX binaries
+SAVE = false;    % save symbolic expressions for load directly
+GENERATE_C = false; % generate files for C-FROST
+GENERATE_C_COMPILE = false; % generate C++ source and header files for C-FROST
 OMIT_CORIOLIS = true; % drop velocity terms
 RUN_MATLAB_OPT = true; % run the optimization in MATLAB
 %% Load hybrid system
