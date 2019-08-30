@@ -18,6 +18,10 @@ y_hip_flexion_right = robot.States.x('hip_flexion_right');
 y_knee_joint_right = robot.States.x('knee_joint_right');
 y_toe_joint_right = robot.States.x('toe_joint_right');
 
+
+
+%ya_new = robot.States.x('BasePosX') - 10.0 * exp(3*t);
+
 ya_2 = [y_hip_abduction_left;
     y_hip_rotation_left;
     y_hip_flexion_left;

@@ -107,7 +107,13 @@ function right_stance(nlp, bounds, varargin)
     
     % Torque Cost
     addRunningCost(nlp, cassie.costs.torque(nlp), 'u');
-    
+    addRunningCost(nlp, cassie.costs.model_error(nlp), {'x', 'T'}, {5});
+    for i = 1:nlp.NumNode
+        auxData = nlp.CostTable.modelerror(i).AuxData;
+        auxData{1} = i;
+        nlp.CostTable.modelerror(i).setAuxdata(auxData);
+        %nlp.updateCostProp('modelerror', i, 'AuxData', auxData);
+    end
 end
 
 

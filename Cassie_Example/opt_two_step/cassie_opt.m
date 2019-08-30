@@ -81,7 +81,8 @@ end
 % removeConstraint(nlp.Phase(1),'dynamics_equation');
 % removeConstraint(nlp.Phase(3),'dynamics_equation');
 % removeConstraint(nlp.Phase(1),'BezierSymmetry');
-
+% compileConstraint(nlp, 1, {'time_output_dynamics', 'd1y_time_RightStance', 'y_time_RightStance'}, EXPORT_PATH, 'dynamics_equation');
+% compileConstraint(nlp, 3, {'time_output_dynamics', 'd1y_time_LeftStance', 'y_time_LeftStance'}, EXPORT_PATH, 'dynamics_equation');
 
 %% Update bounds
 
