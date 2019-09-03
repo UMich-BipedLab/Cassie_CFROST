@@ -62,10 +62,12 @@ nlp.update;
 
 %% Compile and Save
 if COMPILE
-    compileObjective(nlp, [], [], EXPORT_PATH);
+    compileObjective(nlp, [], [], EXPORT_PATH, [], 'TemplateHeader', fullfile(root, 'Cassie_Example', 'opt_two_step', 'res', 'templateFix.hh'),...
+        'TemplateFile', fullfile(root, 'Cassie_Example', 'opt_two_step', 'res', 'templateFix.cc'));
     compileConstraint(nlp, [], [], EXPORT_PATH, 'dynamics_equation');
 end
-
+compileObjective(nlp, [], [], EXPORT_PATH, [], 'TemplateHeader', fullfile(root, 'Cassie_Example', 'opt_two_step', 'res', 'templateFix.hh'),...
+    'TemplateFile', fullfile(root, 'Cassie_Example', 'opt_two_step', 'res', 'templateFix.cc'));
 % Save
 if SAVE
     if ~exist(LOAD_PATH,'dir')
@@ -84,6 +86,7 @@ end
 % compileConstraint(nlp, 1, {'time_output_dynamics', 'd1y_time_RightStance', 'y_time_RightStance'}, EXPORT_PATH, 'dynamics_equation');
 % compileConstraint(nlp, 3, {'time_output_dynamics', 'd1y_time_LeftStance', 'y_time_LeftStance'}, EXPORT_PATH, 'dynamics_equation');
 
+% compileObjective(nlp, 1, {'modelError_RightStance'}, EXPORT_PATH, 'dynamics_equation');
 %% Update bounds
 
 % -------- Velocity ---------
