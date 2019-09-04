@@ -28,7 +28,7 @@ function ModelErrorCost(nlp)
 
    
     for k = 2:nlp.NumNode
-        addNodeCost(nlp, cost_func, {'T','x'}, k, {-0.3, 0.5, 2, 0.8, k});
+        addNodeCost(nlp, cost_func, {'T','x'}, k, {-0.05, 0.28, 9.8, 0.85, k});
     end
     
     nlp.update;

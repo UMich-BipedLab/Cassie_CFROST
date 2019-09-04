@@ -4,7 +4,7 @@ function obj = FuncErrorCost( obj, v_des )
 
 DOF = 7;
 % variables
-T  = SymVariable('t',[2,1]);
+T   = SymVariable('t',[2,1]);
 X0  = SymVariable('x0',[DOF,1]);
 XF  = SymVariable('xF',[DOF,1]);
 % parameter

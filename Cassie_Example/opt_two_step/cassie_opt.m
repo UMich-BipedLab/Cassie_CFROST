@@ -90,7 +90,7 @@ end
 %% Update bounds
 
 % -------- Velocity ---------
-velocity = [0.0;0.0];
+velocity = [0.2415;0.0];
 nlp.Phase(1).updateConstrProp('average_velocity_RightStance', 'last', 'lb', velocity, 'ub', velocity);
 nlp.Phase(3).updateConstrProp('average_velocity_LeftStance', 'last', 'lb', velocity, 'ub', velocity);
 
@@ -122,8 +122,8 @@ ANIM_PATH = fullfile(root,'Cassie_Example','opt_two_step','gen', 'anim');
 if ~exist(ANIM_PATH,'dir')
     mkdir(ANIM_PATH);
 end
-skip_export = false; % set it to true after exporting the functions once.
-cassie.load_animation(robot, gait, [], 'ExportPath', ANIM_PATH, 'SkipExporting', false);
+skip_export = true; % set it to true after exporting the functions once.
+cassie.load_animation(robot, gait, [], 'ExportPath', ANIM_PATH, 'SkipExporting', skip_export);
 
 %% Create c-frost problem
 if GENERATE_C

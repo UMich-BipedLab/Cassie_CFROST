@@ -1,4 +1,4 @@
-function bounds = getBounds(robot, vx, vy, height)
+function bounds = getBounds(robot, vx, vy, STime)
 
 % Get Bounds
 model_bounds = robot.getLimits();
@@ -55,6 +55,12 @@ model_bounds.toe_to_toe_width.ub = -0.10;
 %% Right Stance
 bounds.RightStance = model_bounds;
 
+% bounds.RightStance.states.x.lb(1) = -0.05;
+% bounds.RightStance.states.x.ub(1) = -0.05;
+
+% bounds.RightStance.states.dx.lb(1) = 0.28;
+% bounds.RightStance.states.dx.ub(1) = 0.28;
+
 % bounds.RightStance.states.dx.lb(17) = max(deg2rad(-3), bounds.RightStance.states.dx.lb(17));
 % bounds.RightStance.states.dx.ub(17) = min(deg2rad(+3), bounds.RightStance.states.dx.ub(17));
 
@@ -62,13 +68,13 @@ bounds.RightStance.time.t0.lb = 0;
 bounds.RightStance.time.t0.ub = 0;
 bounds.RightStance.time.t0.x0 = 0;
 
-bounds.RightStance.time.tf.lb = 0.4;
-bounds.RightStance.time.tf.ub = 0.4;
-bounds.RightStance.time.tf.x0 = 0.4;
+bounds.RightStance.time.tf.lb = STime;
+bounds.RightStance.time.tf.ub = STime;
+bounds.RightStance.time.tf.x0 = STime;
 
-bounds.RightStance.time.duration.lb = 0.4;
-bounds.RightStance.time.duration.ub = 0.4;
-bounds.RightStance.time.duration.x0 = 0.4;
+bounds.RightStance.time.duration.lb = STime;
+bounds.RightStance.time.duration.ub = STime;
+bounds.RightStance.time.duration.x0 = STime;
 
 bounds.RightStance.inputs.ConstraintWrench.fRightToeBottom.lb = -10000;
 bounds.RightStance.inputs.ConstraintWrench.fRightToeBottom.ub = 10000;
@@ -117,13 +123,13 @@ bounds.LeftStance.time.t0.lb = 0;
 bounds.LeftStance.time.t0.ub = 0;
 bounds.LeftStance.time.t0.x0 = 0;
 
-bounds.LeftStance.time.tf.lb = 0.4;
-bounds.LeftStance.time.tf.ub = 0.4;
-bounds.LeftStance.time.tf.x0 = 0.4;
+bounds.LeftStance.time.tf.lb = STime;
+bounds.LeftStance.time.tf.ub = STime;
+bounds.LeftStance.time.tf.x0 = STime;
 
-bounds.LeftStance.time.duration.lb = 0.4;
-bounds.LeftStance.time.duration.ub = 0.4;
-bounds.LeftStance.time.duration.x0 = 0.4;
+bounds.LeftStance.time.duration.lb = STime;
+bounds.LeftStance.time.duration.ub = STime;
+bounds.LeftStance.time.duration.x0 = STime;
 
 bounds.LeftStance.inputs.ConstraintWrench.fLeftToeBottom.lb = -10000;
 bounds.LeftStance.inputs.ConstraintWrench.fLeftToeBottom.ub = 10000;

@@ -2,7 +2,7 @@ function right_stance(nlp, bounds, varargin)
     % Extract Plant
     domain = nlp.Plant;
     vars   = nlp.OptVarTable;
-    nNode = nlp.NumNode;
+    nNode  = nlp.NumNode;
     
     % Add Virtual Constraints
     domain.VirtualConstraints.time.imposeNLPConstraint(nlp, [bounds.time.kp, bounds.time.kd], [1,1]);
@@ -105,33 +105,33 @@ function right_stance(nlp, bounds, varargin)
     
     addConstraint(nlp, ['average_hip_rotation_', domain.Name], 'last', average_hip_rotation_cstr);
     
-    %% Having variable x_start defined at all nodes (example)
-    nlp = AddVariable(nlp, 'xStart', length(domain.States.x), bounds);
-    xStart = SymVariable('xStart', [length(domain.States.x), 1]);
-    vars   = nlp.OptVarTable;
-    
-    contr = domain.States.x - xStart;
-    contr_func = SymFunction(['initial_x_start_',domain.Name], contr, {domain.States.x, xStart});
-    lb = 0;
-    ub = 0;
-    addNodeConstraint(nlp, contr_func, {'x', 'xStart'}, 'first', lb, ub, 'NonLinear');
-
-    xStartPrev = SymVariable('xStartPrev', [length(xStart), 1]);
-    contr = xStart - xStartPrev;
-    contr_func = SymFunction(['xStartCont_',domain.Name], contr, {xStart, xStartPrev});
-    node_list = 2:1:nNode;
-    int_x_cstr(numel(node_list)) = struct();
-    [int_x_cstr.Name] = deal(['xStartCont_',domain.Name]);
-    [int_x_cstr.Dimension] = deal(length(nlp.Plant.States.x));
-    [int_x_cstr.lb] = deal(0);
-    [int_x_cstr.ub] = deal(0);
-    [int_x_cstr.SymFun] = deal(contr_func);
-    [int_x_cstr.Type] = deal('Nonlinear');
-    for i = 1:numel(node_list)
-        idx = node_list(i);
-        int_x_cstr(i).DepVariables = [vars.xStart(idx);vars.xStart(idx-1)];
-    end
-    nlp = addConstraint(nlp, ['xStartCont_',domain.Name], node_list, int_x_cstr);
+%     %% Having variable x_start defined at all nodes (example)
+%     nlp = AddVariable(nlp, 'xStart', length(domain.States.x), bounds);
+%     xStart = SymVariable('xStart', [length(domain.States.x), 1]);
+%     vars   = nlp.OptVarTable;
+%     
+%     contr = domain.States.x - xStart;
+%     contr_func = SymFunction(['initial_x_start_',domain.Name], contr, {domain.States.x, xStart});
+%     lb = 0;
+%     ub = 0;
+%     addNodeConstraint(nlp, contr_func, {'x', 'xStart'}, 'first', lb, ub, 'NonLinear');
+% 
+%     xStartPrev = SymVariable('xStartPrev', [length(xStart), 1]);
+%     contr = xStart - xStartPrev;
+%     contr_func = SymFunction(['xStartCont_',domain.Name], contr, {xStart, xStartPrev});
+%     node_list = 2:1:nNode;
+%     int_x_cstr(numel(node_list)) = struct();
+%     [int_x_cstr.Name] = deal(['xStartCont_',domain.Name]);
+%     [int_x_cstr.Dimension] = deal(length(nlp.Plant.States.x));
+%     [int_x_cstr.lb] = deal(0);
+%     [int_x_cstr.ub] = deal(0);
+%     [int_x_cstr.SymFun] = deal(contr_func);
+%     [int_x_cstr.Type] = deal('Nonlinear');
+%     for i = 1:numel(node_list)
+%         idx = node_list(i);
+%         int_x_cstr(i).DepVariables = [vars.xStart(idx);vars.xStart(idx-1)];
+%     end
+%     nlp = addConstraint(nlp, ['xStartCont_',domain.Name], node_list, int_x_cstr);
     %% Costs
     
     % Torque Cost
